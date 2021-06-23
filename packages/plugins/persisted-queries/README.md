@@ -38,7 +38,12 @@ const getEnveloped = envelop({
 
 ...
 
+const { parse, validate, contextFactory, execute, schema } = config.getEnveloped({ request });
+
+...
+
 await persistedQueriesStore.buildStore(); // load persisted-quries files
+
 server.listen() // once queries are loaded you can safely start the server
 ```
 
@@ -48,4 +53,4 @@ TODO
 
 - default behaviour to identify query id from standard "query" param
 - how to match ids from a single queries list
-- 
+- pass request object to getEnveloped, in order to set initial context necessary to access request data
