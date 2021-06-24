@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { Plugin, DefaultContext } from '@envelop/core';
 import { DocumentNode, parse, Source, GraphQLError } from 'graphql';
 
@@ -17,8 +18,8 @@ interface PluginContext {
 export type UsePersistedQueriesOptions = {
   store: PersistedQueriesStore;
   onlyPersisted?: boolean;
-  setQueryId?: (context: Readonly<DefaultContext>) => string;
-  pickSingleList?: (context: Readonly<DefaultContext>) => string;
+  setQueryId?: (context: Readonly<DefaultContext>) => string | undefined;
+  pickSingleList?: (context: Readonly<DefaultContext>) => string | undefined;
 };
 
 const DEFAULT_OPTIONS: Omit<UsePersistedQueriesOptions, 'store'> = {

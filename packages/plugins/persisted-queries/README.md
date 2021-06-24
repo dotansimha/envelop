@@ -1,4 +1,4 @@
-## `@envelop/persisted-operations`
+## `@envelop/persisted-queries`
 
 TODO
 
@@ -9,8 +9,6 @@ yarn add @envelop/persisted-queries
 ```
 
 ## Basic Usage
-
-TODO
 
 For convenience the plugin expose a Class which allow you to setup a basic store from one or more JSON files.  
 You can use this or build your own store that implements `PersistedQueriesStore` typescript interface exported by the plugin.
@@ -29,28 +27,36 @@ const getEnveloped = envelop({
   plugins: [
     usePersistedQueries({
       store: persistedQueriesStore,
-      onlyPersisted: true,
-      setQueryId: (context) => context.request.body.queryId
+      onlyPersisted: true, // default `false`. When set to true, will reject queries that don't have a valid query id
     }),
     // ... other plugins ...
   ],
 });
 
-...
+-----
 
-const { parse, validate, contextFactory, execute, schema } = config.getEnveloped({ request });
-
-...
-
-await persistedQueriesStore.buildStore(); // load persisted-quries files
+await persistedQueriesStore.buildStore(); // get store ready, in this case by loading persisted-quries files
 
 server.listen() // once queries are loaded you can safely start the server
 ```
 
+TODO: explain default behaviour which identifies query id from standard "query" param (GraphQL source)
+
 ## Advanced usage
 
-TODO
+In order to build custom logic you probably want to pass the request object (or part of it) to `getEnveloped`, so that this will be available as the initial context
 
-- default behaviour to identify query id from standard "query" param
-- how to match ids from a single queries list
-- pass request object to getEnveloped, in order to set initial context necessary to access request data
+```ts
+httpServer.on('request', (request, response) => {
+  const { parse, validate, contextFactory, execute, schema } = getEnveloped({ request });
+  // ...
+}
+```
+
+TODO, describe the following:
+
+- lists are named after file name (without extension) when using `JsonFilesStore`
+- build custom logic to set query id: `setQueryId: (context) => context.request.body.queryId // set custom logic to get queryId`
+- how to match ids from a single queries list: `pickSingleList: (context) => `${context.request.headers.applicationName}_persistedQueries``
+- `setQueryId` and `pickSingleList` can return undefined, explain what happens
+- building your own store
