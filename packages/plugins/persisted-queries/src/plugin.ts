@@ -7,8 +7,8 @@ const contextProperty = 'documentId';
 export type PersistedQueriesStoreList = Map<string, { [key: string]: string }>;
 
 export interface PersistedQueriesStore {
-  listsMap(): PersistedQueriesStoreList;
-  buildStore(): Promise<void>;
+  get(): PersistedQueriesStoreList;
+  build(): Promise<void>;
 }
 
 interface PluginContext {
@@ -31,10 +31,10 @@ export const usePersistedQueries = (rawOptions: UsePersistedQueriesOptions): Plu
     ...DEFAULT_OPTIONS,
     ...(rawOptions || {}),
   };
-  const store = options.store.listsMap();
 
   return {
     onParse({ context, params, extendContext, setParsedDocument }) {
+      const store = options.store.get(); // retrieve fresh instance of store Map
       const queryId = options.setQueryId ? options.setQueryId(context) : queryIdFromSource(params.source);
       const pickedListName = options.pickSingleList && options.pickSingleList(context);
       const pickedList = pickedListName ? store.get(pickedListName) : undefined;

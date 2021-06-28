@@ -35,7 +35,7 @@ const getEnveloped = envelop({
 
 -----
 
-await persistedQueriesStore.buildStore(); // get store ready, in this case by loading persisted-quries files
+await persistedQueriesStore.build(); // get store ready, in this case by loading persisted-quries files
 
 server.listen() // once queries are loaded you can safely start the server
 ```
@@ -55,8 +55,9 @@ httpServer.on('request', (request, response) => {
 
 TODO, describe the following:
 
-- lists are named after file name (without extension) when using `JsonFilesStore`
+-  when using `JsonFilesStore`, lists are named after file name (without extension)
 - build custom logic to set query id: `setQueryId: (context) => context.request.body.queryId // set custom logic to get queryId`
-- how to match ids from a single queries list: `pickSingleList: (context) => `${context.request.headers.applicationName}_persistedQueries``
+- how to match ids from a single queries list: `` pickSingleList: (context) => `${context.request.headers.applicationName}_persistedQueries` ``
 - `setQueryId` and `pickSingleList` can return undefined, explain what happens
 - building your own store
+- update the store during runtime with updated or new lists, without restarting the server

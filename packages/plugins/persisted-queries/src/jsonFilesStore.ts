@@ -10,11 +10,11 @@ export class JsonFilesStore implements PersistedQueriesStore {
     this.paths = jsonFilePaths;
   }
 
-  listsMap(): PersistedQueriesStoreList {
+  get(): PersistedQueriesStoreList {
     return this.store;
   }
 
-  public async buildStore(): Promise<void> {
+  public async build(): Promise<void> {
     const readListPromises = [];
 
     for (const filePath of this.paths) {
