@@ -35,7 +35,7 @@ const getEnveloped = envelop({
 
 -----
 
-await persistedQueriesStore.build(); // get store ready, in this case by loading persisted-quries files
+await persistedQueriesStore.load(); // get store ready, in this case by loading persisted-quries files
 
 server.listen() // once queries are loaded you can safely start the server
 ```

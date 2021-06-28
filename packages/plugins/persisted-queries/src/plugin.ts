@@ -8,7 +8,6 @@ export type PersistedQueriesStoreList = Map<string, { [key: string]: string }>;
 
 export interface PersistedQueriesStore {
   get(): PersistedQueriesStoreList;
-  load(): Promise<string[]>;
 }
 
 interface PluginContext {

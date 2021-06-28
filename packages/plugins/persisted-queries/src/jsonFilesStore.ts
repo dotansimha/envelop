@@ -15,18 +15,21 @@ export class JsonFilesStore implements PersistedQueriesStore {
     return this.store;
   }
 
-  public load(): Promise<string[]> {
+  public load(whitelist: string[] = []): Promise<string[]> {
     const readListPromises = [];
 
     for (const filePath of this.paths) {
       const extension = extname(filePath);
+      const listName = basename(filePath, extension);
 
       if (extension !== '.json') {
         console.error(`Persisted query file must be JSON format, received: ${filePath}`);
         continue;
+      } else if (whitelist.length && !whitelist.includes(listName)) {
+        // in case of whitelist (most likely to update existing store), only process lists whose name is whitelisted
+        continue;
       }
 
-      const listName = basename(filePath, extension);
       const queriesFile = filePath && (isAbsolute(filePath) ? filePath : resolve(process.cwd(), filePath));
 
       readListPromises.push(
