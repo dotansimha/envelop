@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { basename, extname, isAbsolute, resolve } from 'path';
 import { readFile } from 'fs/promises';
 import { PersistedQueriesStore, PersistedQueriesStoreList } from './plugin';
@@ -14,7 +15,7 @@ export class JsonFilesStore implements PersistedQueriesStore {
     return this.store;
   }
 
-  public async build(): Promise<void> {
+  public load(): Promise<string[]> {
     const readListPromises = [];
 
     for (const filePath of this.paths) {
@@ -33,13 +34,15 @@ export class JsonFilesStore implements PersistedQueriesStore {
           .then(content => {
             console.info(`Successfully loaded persisted queries from "${listName}"`);
             this.store.set(listName, JSON.parse(content));
+            return filePath;
           })
-          .catch(() => {
+          .catch(error => {
             console.error(`Could not load persisted queries from: ${filePath}`);
+            return error;
           })
       );
     }
 
-    await Promise.all(readListPromises);
+    return Promise.all(readListPromises);
   }
 }

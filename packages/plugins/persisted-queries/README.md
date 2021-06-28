@@ -27,7 +27,7 @@ const getEnveloped = envelop({
   plugins: [
     usePersistedQueries({
       store: persistedQueriesStore,
-      onlyPersisted: true, // default `false`. When set to true, will reject queries that don't have a valid query id
+      onlyPersisted: true, // default `false`. When set to true, will reject requests that don't have a valid query id
     }),
     // ... other plugins ...
   ],
@@ -58,6 +58,8 @@ TODO, describe the following:
 -  when using `JsonFilesStore`, lists are named after file name (without extension)
 - build custom logic to set query id: `setQueryId: (context) => context.request.body.queryId // set custom logic to get queryId`
 - how to match ids from a single queries list: `` pickSingleList: (context) => `${context.request.headers.applicationName}_persistedQueries` ``
+- custom handling of file read errors `.then(lists => { listsResults.forEach(listResult => { if (listResult instanceof Error) { console.log('error', listResult.message); } }) });`
 - `setQueryId` and `pickSingleList` can return undefined, explain what happens
+- `documentId` property set in context with query id; to be retrieved for other usage (e.g. logging)
 - building your own store
 - update the store during runtime with updated or new lists, without restarting the server
