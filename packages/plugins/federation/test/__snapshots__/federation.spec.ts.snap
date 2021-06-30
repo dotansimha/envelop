@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`useFederation Should execute correctly 1`] = `
+Object {
+  "me": Object {
+    "reviews": Array [
+      Object {
+        "body": "Love it!",
+        "product": Object {
+          "name": "Table",
+          "upc": "1",
+        },
+      },
+      Object {
+        "body": "Too expensive.",
+        "product": Object {
+          "name": "Couch",
+          "upc": "2",
+        },
+      },
+    ],
+    "username": "@ada",
+  },
+}
+`;
