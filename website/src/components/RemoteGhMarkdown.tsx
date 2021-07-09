@@ -1,63 +1,70 @@
-import React from 'react';
-import ReactMarkdown, { uriTransformer } from 'react-markdown';
-import { components } from '@guild-docs/client';
-import { Code, useColorModeValue } from '@chakra-ui/react';
+import { MDX } from '@guild-docs/client';
 
-const MD_COMPONENTS = {
-  ...components,
-  pre: (props: any) => <div {...props} />,
-  code: ({ inline, ...props }: any) => {
-    const colorScheme = useColorModeValue('blackAlpha', undefined);
+import { extraComponents } from './Markdown';
 
-    return inline ? (
-      <Code
-        {...props}
-        display={'inline'}
-        margin="1px"
-        colorScheme={colorScheme}
-        fontWeight="semibold"
-        fontSize="0.9em"
-        borderRadius={'sm'}
-      />
-    ) : (
-      <Code
-        fontSize="0.9rem"
-        {...props}
-        colorScheme={colorScheme}
-        padding={'20px !important'}
-        width={'100%'}
-        borderRadius={'sm'}
-      />
-    );
-  },
-};
+import type { ComponentProps } from 'react';
+import type { CompiledMDX } from '@guild-docs/server';
 
-export const RemoteGHMarkdown: React.FC<{ children: string; repo?: string; directory?: string }> = ({
-  children,
-  repo,
-  directory,
-}) => {
+const protocols = ['http', 'https', 'mailto', 'tel'];
+
+function uriTransformer(uri?: string) {
+  const url = (uri || '').trim();
+  const first = url.charAt(0);
+
+  if (first === '#' || first === '/') {
+    return url;
+  }
+
+  const colon = url.indexOf(':');
+  if (colon === -1) {
+    return url;
+  }
+
+  let index = -1;
+
+  while (++index < protocols.length) {
+    const protocol = protocols[index];
+
+    if (colon === protocol.length && url.slice(0, protocol.length).toLowerCase() === protocol) {
+      return url;
+    }
+  }
+
+  index = url.indexOf('?');
+  if (index !== -1 && colon > index) {
+    return url;
+  }
+
+  index = url.indexOf('#');
+  if (index !== -1 && colon > index) {
+    return url;
+  }
+
+  return 'javascript:void(0)';
+}
+
+export const RemoteGHMarkdown = ({ content, repo, directory }: { content: CompiledMDX; repo?: string; directory?: string }) => {
   return (
-    <ReactMarkdown
-      components={MD_COMPONENTS}
-      linkTarget="_blank"
-      transformImageUri={src => {
-        const initial = uriTransformer(src);
+    <MDX
+      mdx={content.mdx}
+      extraComponents={{
+        ...extraComponents,
+        img(props: ComponentProps<'img'>) {
+          let src = uriTransformer(props.src);
 
-        if (repo) {
-          let modified = repo.replace('https://github.com/', 'https://raw.githubusercontent.com/') + '/HEAD/';
+          if (repo) {
+            let modified = repo.replace('https://github.com/', 'https://raw.githubusercontent.com/') + '/HEAD/';
 
-          if (directory) {
-            modified = modified + directory;
+            if (directory) {
+              modified = modified + directory;
+            }
+
+            src = modified + (src.startsWith('.') ? src.substr(1) : src);
           }
 
-          return modified + (initial.startsWith('.') ? initial.substr(1) : initial);
-        }
-
-        return initial;
+          return <img {...props} src={src} />;
+        },
       }}
-    >
-      {children}
-    </ReactMarkdown>
+    />
   );
 };

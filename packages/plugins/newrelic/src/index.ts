@@ -1,5 +1,5 @@
 import { shim as instrumentationApi } from 'newrelic';
-import { Plugin, OnExecuteHookResult } from '@envelop/types';
+import { Plugin, OnExecuteHookResult, OnResolverCalledHook } from '@envelop/types';
 import { print, FieldNode, Kind, OperationDefinitionNode, SelectionNode } from 'graphql';
 import { Path } from 'graphql/jsutils/Path';
 
@@ -103,7 +103,7 @@ export const useNewRelic = (rawOptions?: UseNewRelicOptions): Plugin => {
 
       const operationSegment = instrumentationApi.getActiveSegment();
 
-      const onResolverCalled: OnExecuteHookResult['onResolverCalled'] = options.trackResolvers
+      const onResolverCalled: OnResolverCalledHook | undefined = options.trackResolvers
         ? ({ args: resolversArgs, info }) => {
             const { returnType, path, parentType } = info;
             const formattedPath = flattenPath(path, delimiter);

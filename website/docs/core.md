@@ -29,7 +29,7 @@ const getEnveloped = envelop({
 
 #### useErrorHandler
 
-This plugin triggers a custom function every time execution encounters an error.
+This plugin invokes a custom function with the every time execution encounters an error.
 
 ```ts
 import { envelop, useErrorHandler } from '@envelop/core';
@@ -45,7 +45,7 @@ const getEnveloped = envelop({
 });
 ```
 
-> Note: every error is being triggered on its own. So an execution result with multiple errors will yield multiple calls.
+> **Note:** The handler is invoked for each error. So an execution result with multiple errors will yield multiple calls.
 
 #### useExtendContext
 
@@ -69,7 +69,7 @@ const getEnveloped = envelop({
 
 #### useLogger
 
-It logs parameters and information about the execution phases. You can easily plug in your custom logger.
+Logs parameters and information about the execution phases. You can easily plug in your custom logger.
 
 ```ts
 import { envelop, useLogger } from '@envelop/core';
@@ -134,7 +134,7 @@ const getEnveloped = envelop({
 
 #### useMaskedErrors
 
-Prevent unexpected error messages from leaking to the GraphQL clients.
+Prevent unexpected error messages from leaking to the GraphQL API consumers.
 
 ```ts
 import { envelop, useSchema, useMaskedErrors, EnvelopError } from '@envelop/core';

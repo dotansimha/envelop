@@ -1,5 +1,6 @@
 import { DocumentNode, ExecutionArgs, GraphQLFieldResolver, GraphQLSchema, GraphQLTypeResolver, SubscriptionArgs } from 'graphql';
 import { Maybe } from 'graphql/jsutils/Maybe';
+import { ArbitraryObject } from 'packages/types/src/get-enveloped';
 import { EnvelopOrchestrator } from './orchestrator';
 
 const HR_TO_NS = 1e9;
@@ -12,7 +13,9 @@ const deltaFrom = (hrtime: [number, number]) => {
   return ns / NS_TO_MS;
 };
 
-export function traceOrchestrator(orchestrator: EnvelopOrchestrator): EnvelopOrchestrator {
+export function traceOrchestrator<TInitialContext extends ArbitraryObject, TPluginsContext extends ArbitraryObject>(
+  orchestrator: EnvelopOrchestrator<TInitialContext, TPluginsContext>
+): EnvelopOrchestrator<TInitialContext & { _envelopTracing?: {} }, TPluginsContext> {
   const createTracer = (name: string, ctx: Record<string, any>) => {
     const hrtime = process.hrtime();
 
@@ -24,7 +27,8 @@ export function traceOrchestrator(orchestrator: EnvelopOrchestrator): EnvelopOrc
 
   return {
     ...orchestrator,
-    parse: (ctx = {}) => {
+    parse: (ctx = {} as any) => {
+      ctx._envelopTracing = ctx._envelopTracing || {};
       const actualFn = orchestrator.parse(ctx);
 
       return (...args) => {
@@ -37,7 +41,8 @@ export function traceOrchestrator(orchestrator: EnvelopOrchestrator): EnvelopOrc
         }
       };
     },
-    validate: (ctx = {}) => {
+    validate: (ctx = {} as any) => {
+      ctx._envelopTracing = ctx._envelopTracing || {};
       const actualFn = orchestrator.validate(ctx);
 
       return (...args) => {
@@ -120,7 +125,7 @@ export function traceOrchestrator(orchestrator: EnvelopOrchestrator): EnvelopOrc
         done();
       }
     },
-    contextFactory: (ctx = {}) => {
+    contextFactory: (ctx = {} as any) => {
       const actualFn = orchestrator.contextFactory(ctx);
 
       return async childCtx => {

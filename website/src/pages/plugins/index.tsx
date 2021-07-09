@@ -1,66 +1,102 @@
-import Head from 'next/head';
-import { useFetch } from 'use-http';
-import { CardsColorful, MarketplaceSearch } from '@theguild/components';
-import { Spinner, Center } from '@chakra-ui/react';
-import type { PluginWithStats } from '../../pages/api/plugins';
-import React from 'react';
-import { IMarketplaceItemProps } from '@theguild/components/dist/types/components';
-import { RemoteGHMarkdown } from '../../components/RemoteGhMarkdown';
-import { PackageInstall } from '../../components/packageInstall';
-import { Markdown } from '../../components/Markdown';
 import { compareDesc } from 'date-fns';
+import Head from 'next/head';
+import React from 'react';
 
-export default function Marketplace() {
-  const { loading, data = [] } = useFetch<PluginWithStats[]>('/api/plugins', {}, []);
+import { buildMultipleMDX, CompiledMDX } from '@guild-docs/server';
+import { MarketplaceSearch } from '@theguild/components';
+import { IMarketplaceItemProps } from '@theguild/components/dist/types/components';
+import { handlePushRoute } from '@guild-docs/client';
 
+import { Markdown } from '../../components/Markdown';
+import { PackageInstall } from '../../components/packageInstall';
+import { RemoteGHMarkdown } from '../../components/RemoteGhMarkdown';
+import { getPluginsData } from '../../lib/pluginsData';
+
+import type { PluginWithStats } from '../../lib/pluginsData';
+import type { GetStaticProps } from 'next';
+
+interface MarketplaceProps {
+  data: (PluginWithStats & { description: CompiledMDX; content: CompiledMDX })[];
+}
+
+export const getStaticProps: GetStaticProps<MarketplaceProps> = async () => {
+  const pluginsData = await getPluginsData();
+
+  const data = await Promise.all(
+    pluginsData.map(async plugin => {
+      const [description, content] = await buildMultipleMDX([
+        `${plugin.stats?.collected?.metadata?.version || ''}\n\n${plugin.stats?.collected?.metadata?.description || ''}`,
+        plugin.readme || plugin.stats?.collected?.metadata?.readme || '',
+      ]);
+      return {
+        ...plugin,
+        description,
+        content,
+      };
+    })
+  );
+
+  return {
+    props: {
+      data,
+    },
+    // Revalidate at most once every 1 hour
+    revalidate: 60 * 60,
+  };
+};
+
+export default function Marketplace({ data }: MarketplaceProps) {
   const marketplaceItems: Array<IMarketplaceItemProps & { raw: PluginWithStats }> = React.useMemo(() => {
     if (data && data.length > 0) {
-      return data.map<IMarketplaceItemProps & { raw: PluginWithStats }>(rawPlugin => ({
-        raw: rawPlugin,
-        title: rawPlugin.title,
-        link: {
-          href: `/plugins/${rawPlugin.identifier}`,
-          title: `${rawPlugin.title} plugin details`,
-        },
-        description: (
-          <Markdown>{`${rawPlugin.stats?.collected?.metadata?.version || ''}\n\n${
-            rawPlugin.stats?.collected?.metadata?.description || ''
-          }`}</Markdown>
-        ),
-        modal: {
-          header: {
-            image: {
-              src: rawPlugin.iconUrl,
-              alt: rawPlugin.title,
-            },
-            description: {
-              href: `https://www.npmjs.com/package/${rawPlugin.npmPackage}`,
-              children: `${rawPlugin.npmPackage} on npm`,
-              title: `${rawPlugin.npmPackage} on NPM`,
-              target: '_blank',
-              rel: 'noopener noreferrer',
-            },
+      return data.map<IMarketplaceItemProps & { raw: PluginWithStats }>(rawPlugin => {
+        const linkHref = `/plugins/${rawPlugin.identifier}`;
+        return {
+          raw: rawPlugin,
+          title: rawPlugin.title,
+          link: {
+            href: linkHref,
+            title: `${rawPlugin.title} plugin details`,
+            onClick: ev => handlePushRoute(linkHref, ev),
           },
-          content: (
-            <>
-              <PackageInstall packageName={rawPlugin.npmPackage} />
-              <RemoteGHMarkdown
-                directory={rawPlugin.stats?.collected?.metadata?.repository?.directory}
-                repo={rawPlugin.stats?.collected?.metadata?.links?.repository}
-              >
-                {rawPlugin.readme || rawPlugin.stats?.collected?.metadata?.readme || ''}
-              </RemoteGHMarkdown>
-            </>
-          ),
-        },
-        update: rawPlugin.stats?.collected?.metadata?.date || new Date().toISOString(),
-        image: {
-          height: 60,
-          width: 60,
-          src: rawPlugin.iconUrl!,
-          alt: rawPlugin.title,
-        },
-      }));
+          description: <Markdown content={rawPlugin.description} />,
+          modal: {
+            header: {
+              image: rawPlugin.iconUrl
+                ? {
+                    src: rawPlugin.iconUrl,
+                    alt: rawPlugin.title,
+                  }
+                : undefined,
+              description: {
+                href: `https://www.npmjs.com/package/${rawPlugin.npmPackage}`,
+                children: `${rawPlugin.npmPackage} on npm`,
+                title: `${rawPlugin.npmPackage} on NPM`,
+                target: '_blank',
+                rel: 'noopener noreferrer',
+              },
+            },
+            content: (
+              <>
+                <PackageInstall packageName={rawPlugin.npmPackage} />
+                <RemoteGHMarkdown
+                  directory={rawPlugin.stats?.collected?.metadata?.repository?.directory}
+                  repo={rawPlugin.stats?.collected?.metadata?.links?.repository}
+                  content={rawPlugin.content}
+                />
+              </>
+            ),
+          },
+          update: rawPlugin.stats?.collected?.metadata?.date || new Date().toISOString(),
+          image: rawPlugin.iconUrl
+            ? {
+                height: 60,
+                width: 60,
+                src: rawPlugin.iconUrl,
+                alt: rawPlugin.title,
+              }
+            : undefined,
+        };
+      });
     }
 
     return [];
@@ -81,8 +117,8 @@ export default function Marketplace() {
       return [...marketplaceItems]
         .filter(i => i.raw.stats?.collected?.npm.downloads)
         .sort((a, b) => {
-          const aMonthlyDownloads = a.raw.stats.collected.npm.downloads[2].count;
-          const bMonthlyDownloads = b.raw.stats.collected.npm.downloads[2].count;
+          const aMonthlyDownloads = a.raw.stats?.collected.npm.downloads[2].count || 0;
+          const bMonthlyDownloads = b.raw.stats?.collected.npm.downloads[2].count || 0;
 
           return bMonthlyDownloads - aMonthlyDownloads;
         });
@@ -105,15 +141,10 @@ export default function Marketplace() {
   return (
     <>
       <Head>
-        <title>Plugins Hub</title>
+        <title>Plugin Hub</title>
       </Head>
-      {loading ? (
-        <Center h="300px">
-          <Spinner size={'xl'} />
-        </Center>
-      ) : (
-        <>
-          {/* <CardsColorful
+
+      {/* <CardsColorful
             cards={randomThirdParty.map(item => ({
               title: item.title,
               description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -127,30 +158,28 @@ export default function Marketplace() {
               color: '#3547E5',
             }))}
           /> */}
-          <MarketplaceSearch
-            title="Explore Plugins Hub"
-            placeholder="Find plugins..."
-            primaryList={{
-              title: 'Trending',
-              items: trendingItems,
-              placeholder: '0 items',
-              pagination: 10,
-            }}
-            secondaryList={{
-              title: 'Recently Updated',
-              items: recentlyUpdatedItems,
-              placeholder: '0 items',
-              pagination: 10,
-            }}
-            queryList={{
-              title: 'Search Results',
-              items: marketplaceItems,
-              placeholder: 'No results for {query}',
-              pagination: 10,
-            }}
-          />
-        </>
-      )}
+      <MarketplaceSearch
+        title="Explore Plugin Hub"
+        placeholder="Find plugins..."
+        primaryList={{
+          title: 'Trending',
+          items: trendingItems,
+          placeholder: '0 items',
+          pagination: 10,
+        }}
+        secondaryList={{
+          title: 'Recently Updated',
+          items: recentlyUpdatedItems,
+          placeholder: '0 items',
+          pagination: 10,
+        }}
+        queryList={{
+          title: 'Search Results',
+          items: marketplaceItems,
+          placeholder: 'No results for {query}',
+          pagination: 10,
+        }}
+      />
     </>
   );
 }

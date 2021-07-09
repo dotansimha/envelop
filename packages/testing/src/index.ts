@@ -1,7 +1,7 @@
 import { DocumentNode, ExecutionArgs, ExecutionResult, GraphQLSchema, print } from 'graphql';
 import { getGraphQLParameters, processRequest } from 'graphql-helix';
 import { envelop, useSchema } from '@envelop/core';
-import { Envelop, Plugin } from '@envelop/types';
+import { GetEnvelopedFn, Plugin } from '@envelop/types';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function createSpiedPlugin() {
@@ -49,7 +49,7 @@ type MaybePromise<T> = T | Promise<T>;
 type MaybeAsyncIterableIterator<T> = T | AsyncIterableIterator<T>;
 
 export function createTestkit(
-  pluginsOrEnvelop: Envelop | Plugin<any>[],
+  pluginsOrEnvelop: GetEnvelopedFn<any> | Plugin<any>[],
   schema?: GraphQLSchema
 ): {
   execute: (
@@ -78,7 +78,7 @@ export function createTestkit(
   return {
     wait: ms => new Promise(resolve => setTimeout(resolve, ms)),
     replaceSchema,
-    execute: async (operation, rawVariables = {}, initialContext = null) => {
+    execute: async (operation, rawVariables = {}, initialContext = {}) => {
       const request = {
         headers: {},
         method: 'POST',

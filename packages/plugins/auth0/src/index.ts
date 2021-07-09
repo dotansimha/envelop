@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable dot-notation */
-import { Plugin } from '@envelop/types';
+import { ComposeContext, Plugin } from '@envelop/types';
 import * as JwksRsa from 'jwks-rsa';
 import { decode, verify, VerifyOptions, DecodeOptions } from 'jsonwebtoken';
 
@@ -15,14 +15,23 @@ export type Auth0PluginOptions = {
   jwksClientOptions?: JwksRsa.Options;
   jwtVerifyOptions?: VerifyOptions;
   jwtDecodeOptions?: DecodeOptions;
-  extendContextField?: string;
+  extendContextField?: '_auth0' | string;
   tokenType?: string;
   headerName?: string;
 };
 
 export class UnauthenticatedError extends Error {}
 
-export const useAuth0 = (options: Auth0PluginOptions): Plugin => {
+export type UserPayload = {
+  sub: string;
+  [key: string]: any;
+};
+
+type BuildContext<TOptions extends Auth0PluginOptions> = TOptions['extendContextField'] extends string
+  ? { [TName in TOptions['extendContextField'] as TOptions['extendContextField']]: UserPayload }
+  : { _auth0: UserPayload };
+
+export const useAuth0 = <TOptions extends Auth0PluginOptions>(options: TOptions): Plugin<BuildContext<TOptions>> => {
   const jkwsClient = new JwksRsa.JwksClient({
     cache: true,
     rateLimit: true,
@@ -97,7 +106,7 @@ export const useAuth0 = (options: Auth0PluginOptions): Plugin => {
 
           extendContext({
             [contextField]: decodedPayload,
-          });
+          } as any);
         } else {
           if (options.preventUnauthenticatedAccess) {
             throw new UnauthenticatedError(`Unauthenticated!`);

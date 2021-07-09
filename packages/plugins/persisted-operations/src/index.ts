@@ -36,15 +36,17 @@ export type UsePersistedOperationsOptions = {
 
 const symbolInContext = Symbol('operationId');
 
-export interface PluginContext {
-  [symbolInContext]?: string;
-}
+type PluginContext<TOptions extends Partial<UsePersistedOperationsOptions>> = TOptions['writeToContext'] extends true
+  ? { [symbolInContext]: string }
+  : {};
 
-export function readOperationId(context: PluginContext) {
+export function readOperationId<TOptions extends UsePersistedOperationsOptions>(context: PluginContext<TOptions>): string {
   return context[symbolInContext];
 }
 
-export const usePersistedOperations = (options: UsePersistedOperationsOptions): Plugin<PluginContext> => {
+export const usePersistedOperations = <TOptions extends UsePersistedOperationsOptions>(
+  options: TOptions
+): Plugin<PluginContext<TOptions>> => {
   const writeToContext = options.writeToContext !== false;
 
   return {
@@ -59,7 +61,7 @@ export const usePersistedOperations = (options: UsePersistedOperationsOptions): 
             if (writeToContext) {
               extendContext({
                 [symbolInContext]: params.source,
-              });
+              } as PluginContext<{ writeToContext: true }>);
             }
 
             setParsedDocument(result);

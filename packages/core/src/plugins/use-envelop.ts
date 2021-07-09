@@ -1,6 +1,6 @@
-import { Envelop, Plugin } from '@envelop/types';
+import { GetEnvelopedFn, Plugin } from '@envelop/types';
 
-export const useEnvelop = (envelop: Envelop): Plugin => {
+export const useEnvelop = (envelop: GetEnvelopedFn<any>): Plugin<any> => {
   return {
     onPluginInit({ addPlugin }) {
       for (const plugin of envelop._plugins) {

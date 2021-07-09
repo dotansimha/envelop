@@ -19,7 +19,7 @@ import { envelop, useSchema } from '@envelop/core';
 
 const mySchema = buildSchema( ... ); // GraphQLSchema
 
-const getEnveloped = envelop({
+export const getEnveloped = envelop({
   plugins: [
     useSchema(mySchema)
   ],
@@ -28,10 +28,13 @@ const getEnveloped = envelop({
 
 ### Use your Envelop
 
-The result of `envelop` is a function that allows you to get everything you need for the GraphQL execution: `parse`, `validate`, `contextBuilder` and `execute`. Use that to run the client's GraphQL queries. Here's a pseudo-code example of how it should look like:
+The result of `envelop` is a function that allows you to get everything you need for the GraphQL execution: `parse`, `validate`, `contextBuilder` and `execute`. Use that to run the client's GraphQL queries.
+
+Here is the most basic example of a GraphQL server using envelop with the `http` module.
 
 ```ts
 import { createServer } from 'http';
+import { getEnveloped } from './envelop';
 
 const httpServer = createServer();
 
@@ -52,12 +55,12 @@ httpServer.on('request', async (req, res) => {
   }
 
   // Build the context and execute
-  const context = await contextFactory(req);
+  const contextValue = await contextFactory();
   const result = await execute({
     document,
     schema,
     variableValues: variables,
-    contextValue: context,
+    contextValue,
   });
 
   // Send the response
@@ -67,9 +70,11 @@ httpServer.on('request', async (req, res) => {
 httpServer.listen(3000);
 ```
 
-> The example above uses NodeJS `http` module, but you can use `envelop` with all popular frameworks and servers. Check the examples in our [Integrations page](/docs/integrations).
+> The example above uses Node.js `http` module, but you can use `envelop` with all popular frameworks and servers. Check the examples on our [Integrations page](/docs/integrations).
 
 ## Add your plugins
+
+Adding new functionality is as easy as adding a new envelop plugin to your base envelop setup.
 
 Here's a simple example for collecting metrics and log all incoming requests, using the built-in plugins:
 
@@ -81,4 +86,4 @@ const getEnveloped = envelop({
 });
 ```
 
-> You can find a list of all available plugins in our [Plugins Hub](/plugins)!
+> A list of all available plugins can be found on our [Plugin Hub](/plugins)!

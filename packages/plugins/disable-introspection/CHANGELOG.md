@@ -1,5 +1,11 @@
 # @envelop/disable-introspection
 
+## 0.2.0
+
+### Minor Changes
+
+- effc18b: add optional conditional "disableIf" with context and params
+
 ## 0.1.0
 
 ### Minor Changes

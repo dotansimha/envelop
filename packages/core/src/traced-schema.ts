@@ -1,5 +1,5 @@
 import { defaultFieldResolver, GraphQLFieldResolver, GraphQLSchema, isIntrospectionType, isObjectType } from 'graphql';
-import { AfterResolverPayload, OnResolverCalledHooks } from 'packages/types/src';
+import { AfterResolverHook, OnResolverCalledHook } from '@envelop/types';
 
 export const trackedSchemaSymbol = Symbol('TRACKED_SCHEMA');
 export const resolversHooksSymbol = Symbol('RESOLVERS_HOOKS');
@@ -21,8 +21,8 @@ export function prepareTracedSchema(schema: GraphQLSchema | null | undefined): v
 
         field.resolve = async (root, args, context, info) => {
           if (context && context[resolversHooksSymbol]) {
-            const hooks: OnResolverCalledHooks[] = context[resolversHooksSymbol];
-            const afterCalls: Array<(p: AfterResolverPayload) => void> = [];
+            const hooks: OnResolverCalledHook[] = context[resolversHooksSymbol];
+            const afterCalls: AfterResolverHook[] = [];
 
             for (const hook of hooks) {
               const afterFn = await hook({ root, args, context, info });

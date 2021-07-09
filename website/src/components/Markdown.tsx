@@ -1,25 +1,25 @@
-import React from 'react';
-import ReactMarkdown from 'react-markdown';
-import { components } from '@guild-docs/client';
-import { chakra } from '@chakra-ui/system';
+import { Link } from '@chakra-ui/react';
+import { MDX } from '@guild-docs/client';
 
-const MD_COMPONENTS = {
-  ...components,
-  a: chakra('a', {
-    baseStyle: {
-      display: 'inline',
-      color: '#2f77c9',
-      _hover: {
-        textDecoration: 'underline',
-      },
-    },
-  }),
+import type { ComponentProps } from 'react';
+import type { CompiledMDX } from '@guild-docs/server';
+
+export const extraComponents = {
+  a(props: ComponentProps<'a'>) {
+    return (
+      <Link
+        display="inline"
+        color="#2f77c9"
+        _hover={{
+          textDecoration: 'underline',
+        }}
+        target="_blank"
+        {...props}
+      />
+    );
+  },
 };
 
-export const Markdown: React.FC<{ children: string }> = ({ children }) => {
-  return (
-    <ReactMarkdown linkTarget="_blank" components={MD_COMPONENTS}>
-      {children}
-    </ReactMarkdown>
-  );
+export const Markdown = ({ content }: { content: CompiledMDX }) => {
+  return <MDX mdx={content.mdx} extraComponents={extraComponents} />;
 };

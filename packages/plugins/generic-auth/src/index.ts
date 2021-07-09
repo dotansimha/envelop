@@ -84,34 +84,34 @@ export const useGenericAuth = <UserType extends {} = {}, ContextType extends Def
   if (options.mode === 'protect-all') {
     return {
       async onContextBuilding({ context, extendContext }) {
-        const user = await options.resolveUserFn((context as unknown) as ContextType);
-        await validateUser(user!, (context as unknown) as ContextType);
+        const user = await options.resolveUserFn(context as unknown as ContextType);
+        await validateUser(user!, context as unknown as ContextType);
 
-        extendContext(({
+        extendContext({
           [fieldName]: user,
-        } as unknown) as ContextType);
+        } as unknown as ContextType);
       },
     };
   } else if (options.mode === 'resolve-only') {
     return {
       async onContextBuilding({ context, extendContext }) {
-        const user = await options.resolveUserFn((context as unknown) as ContextType);
+        const user = await options.resolveUserFn(context as unknown as ContextType);
 
-        extendContext(({
+        extendContext({
           [fieldName]: user,
-          validateUser: () => validateUser(user!, (context as unknown) as ContextType),
-        } as unknown) as ContextType);
+          validateUser: () => validateUser(user!, context as unknown as ContextType),
+        } as unknown as ContextType);
       },
     };
   } else if (options.mode === 'protect-auth-directive') {
     return {
       async onContextBuilding({ context, extendContext }) {
-        const user = await options.resolveUserFn((context as unknown) as ContextType);
+        const user = await options.resolveUserFn(context as unknown as ContextType);
 
-        extendContext(({
+        extendContext({
           [fieldName]: user,
-          validateUser: () => validateUser(user!, (context as unknown) as ContextType),
-        } as unknown) as ContextType);
+          validateUser: () => validateUser(user!, context as unknown as ContextType),
+        } as unknown as ContextType);
       },
       onExecute() {
         return {
@@ -121,10 +121,10 @@ export const useGenericAuth = <UserType extends {} = {}, ContextType extends Def
             if (authDirectiveNode) {
               await context.validateUser(
                 context[fieldName],
-                (context as unknown) as ContextType,
+                context as unknown as ContextType,
                 {
                   info,
-                  context: (context as unknown) as ContextType,
+                  context: context as unknown as ContextType,
                   args,
                   root,
                 },

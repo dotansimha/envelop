@@ -1,33 +1,31 @@
-import { DefaultContext, Envelop, Plugin } from '@envelop/types';
-import { createEnvelopOrchestrator } from './orchestrator';
+import { GetEnvelopedFn, ComposeContext, Plugin, ArbitraryObject } from '@envelop/types';
+import { createEnvelopOrchestrator, EnvelopOrchestrator } from './orchestrator';
 import { traceOrchestrator } from './traced-orchestrator';
 
-export function envelop(options: { plugins: Plugin[]; enableInternalTracing?: boolean }): Envelop {
-  let orchestrator = createEnvelopOrchestrator(options.plugins);
+export function envelop<PluginsType extends Plugin<any>[]>(options: {
+  plugins: PluginsType;
+  enableInternalTracing?: boolean;
+}): GetEnvelopedFn<ComposeContext<PluginsType>> {
+  let orchestrator = createEnvelopOrchestrator<ComposeContext<PluginsType>>(options.plugins as any);
 
   if (options.enableInternalTracing) {
     orchestrator = traceOrchestrator(orchestrator);
   }
 
-  const getEnveloped = (initialContext: DefaultContext = {}) => {
-    // DOTAN: Maybe this could be done as part of onSchemaChange instead of here?
-    orchestrator.prepareSchema();
-
-    if (options.enableInternalTracing) {
-      initialContext._envelopTracing = {};
-    }
+  const getEnveloped = <TInitialContext extends ArbitraryObject>(initialContext: TInitialContext = {} as TInitialContext) => {
+    const typedOrchestrator = orchestrator as EnvelopOrchestrator<TInitialContext, ComposeContext<PluginsType>>;
 
     return {
-      parse: orchestrator.parse(initialContext),
-      validate: orchestrator.validate(initialContext),
-      contextFactory: orchestrator.contextFactory(initialContext),
-      execute: orchestrator.execute,
-      subscribe: orchestrator.subscribe,
-      schema: orchestrator.schema!,
+      parse: typedOrchestrator.parse(initialContext),
+      validate: typedOrchestrator.validate(initialContext),
+      contextFactory: typedOrchestrator.contextFactory(initialContext),
+      execute: typedOrchestrator.execute,
+      subscribe: typedOrchestrator.subscribe,
+      schema: typedOrchestrator.schema!,
     };
   };
 
   getEnveloped._plugins = options.plugins;
 
-  return getEnveloped;
+  return getEnveloped as any;
 }

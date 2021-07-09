@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable no-console */
 /* eslint-disable dot-notation */
-import { Plugin, OnExecuteHookResult } from '@envelop/types';
+import { Plugin, OnExecuteHookResult, OnResolverCalledHook } from '@envelop/types';
 import * as Sentry from '@sentry/node';
 import { Span } from '@sentry/types';
 import { ExecutionArgs, Kind, OperationDefinitionNode, print, responsePathAsArray } from 'graphql';
@@ -82,7 +82,7 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
 
       rootSpan.setData('document', document);
 
-      const onResolverCalled: OnExecuteHookResult['onResolverCalled'] = trackResolvers
+      const onResolverCalled: OnResolverCalledHook | undefined = trackResolvers
         ? ({ args: resolversArgs, info }) => {
             if (rootSpan) {
               const { fieldName, returnType, parentType } = info;

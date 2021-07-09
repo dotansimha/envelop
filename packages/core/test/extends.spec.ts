@@ -1,5 +1,5 @@
 import { createSpiedPlugin, createTestkit } from '@envelop/testing';
-import { envelop, useLogger, useSchema } from '../src';
+import { envelop, useExtendContext, useLogger, useSchema } from '../src';
 import { useEnvelop } from '../src/plugins/use-envelop';
 import { schema, query } from './common';
 

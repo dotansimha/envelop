@@ -3,7 +3,7 @@
 `envelop` is a lightweight JavaScript (/TypeScript) library for wrapping GraphQL execution layer and flow, allowing developers to develop, share
 and collaborate on GraphQL-related plugins while filling the missing pieces in GraphQL implementations.
 
-`envelop` aims to extend the GraphQL execution flow by adding plugins that enrichs the feature set of your application. 
+`envelop` aims to extend the GraphQL execution flow by adding plugins that enrichs the feature set of your application.
 
 <p align="center">
   <img height="150" src="./logo.png">
@@ -13,15 +13,16 @@ and collaborate on GraphQL-related plugins while filling the missing pieces in G
 
 > Envelop is created and maintained by [The Guild](https://the-guild.dev/), and used in production by our clients.
 
-### [Envelop Key Concepts]((https://www.envelop.dev/docs#key-concepts))
+### [Envelop Key Concepts](<(https://www.envelop.dev/docs#key-concepts)>)
 
-* Lightweight
-* Wraps the entire GraphQL pipeline, based on plugins
-* Low-level API for extending the execution layer
-* Agnostic to the HTTP layer
-* Agnostic to the schema tools
-* Plugins-based usage
-* No vendor-locking
+- Lightweight
+- Wraps the entire GraphQL pipeline, based on plugins
+- Low-level API for extending the execution layer
+- Agnostic to the HTTP layer
+- Agnostic to the schema tools
+- Plugins-based usage
+- No vendor-locking
+- Amazing TypeScript support
 
 [You can read more about the key concepts or Envelop here](https://www.envelop.dev/docs#key-concepts)
 
@@ -104,35 +105,38 @@ You can explore all plugins in our [Plugins Hub](https://www.envelop.dev/plugins
 
 We provide a few built-in plugins within the `@envelop/core`, and many more plugins as standalone packages.
 
-| Name                       | Package                                                                      | Description                                                                                                                                       |
-| -------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| useSchema                  | [`@envelop/core`](./packages/core#useschema)                                 | Simplest plugin to provide your GraphQL schema.                                                                                                   |
-| useErrorHandler            | [`@envelop/core`](./packages/core#useerrorhandler)                           | Get notified when any execution error occurs.                                                                                                     |
-| useMaskedErrors            | [`@envelop/core`](./packages/core#usemaskederrors)                           | Hide sensitive/unexpected errors from your clients.                                                                                               |
-| useExtendContext           | [`@envelop/core`](./packages/core#useextendcontext)                          | Extend execution context based on your needs.                                                                                                     |
-| useLogger                  | [`@envelop/core`](./packages/core#uselogger)                                 | Simple, yet powerful logging for GraphQL execution.                                                                                               |
-| usePayloadFormatter        | [`@envelop/core`](./packages/core#usepayloadformatter)                       | Format, clean and customize execution result.                                                                                                     |
-| useTiming                  | [`@envelop/core`](./packages/core#usetiming)                                 | Simple timing/tracing mechanism for your execution.                                                                                               |
-| useGraphQLJit              | [`@envelop/graphql-jit`](./packages/plugins/graphql-jit)                     | Custom executor based on GraphQL-JIT.                                                                                                             |
-| useParserCache             | [`@envelop/parser-cache`](./packages/plugins/parser-cache)                   | Simple LRU for caching `parse` results.                                                                                                           |
-| useValidationCache         | [`@envelop/validation-cache`](./packages/plugins/validation-cache)           | Simple LRU for caching `validate` results.                                                                                                        |
-| useDepthLimit              | [`@envelop/depth-limit`](./packages/plugins/depth-limit)                     | Limits the depth of your GraphQL selection sets.                                                                                                  |
-| useDataLoader              | [`@envelop/dataloader`](./packages/plugins/dataloader)                       | Simply injects a DataLoader instance into your context.                                                                                           |
-| useApolloTracing           | [`@envelop/apollo-tracing`](./packages/plugins/apollo-tracing)               | Integrates timing with Apollo-Tracing format (for GraphQL Playground)                                                                             |
-| useSentry                  | [`@envelop/sentry`](./packages/plugins/sentry)                               | Tracks performance, timing and errors and reports it to Sentry.                                                                                   |
-| useOpenTelemetry           | [`@envelop/opentelemetry`](./packages/plugins/opentelemetry)                 | Tracks performance, timing and errors and reports in OpenTelemetry structure.                                                                     |
-| useGenericAuth             | [`@envelop/generic-auth`](./packages/plugins/generic-auth)                   | Super flexible authentication, also supports `@auth` directive .                                                                                  |
-| useAuth0                   | [`@envelop/auth0`](./packages/plugins/auth0)                                 | Validates Auth0 JWT tokens and injects the authenticated user to your context.                                                                    |
-| useGraphQLModules          | [`@envelop/graphql-modules`](./packages/plugins/graphql-modules)             | Integrates the execution lifecycle of GraphQL-Modules.                                                                                            |
-| useGraphQLMiddleware       | [`@envelop/graphql-middleware`](./packages/plugins/graphql-middleware)       | Integrates middlewares written for `graphql-middleware`                                                                                           |
-| useRateLimiter             | [`@envelop/rate-limiter`](./packages/plugins/rate-limiter)                   | Limit request rate via `@rateLimit` directive                                                                                                     |
-| useDisableIntrospection    | [`@envelop/disable-introspection`](./packages/plugins/disable-introspection) | Disables introspection by adding a validation rule                                                                                                |
-| useFilterAllowedOperations | [`@envelop/filter-operation-type`](./packages/plugins/filter-operation-type) | Only allow execution of specific operation types                                                                                                  |
-| useExtendedValidation      | [`@envelop/extended-validation`](./packages/plugins/extended-validation)     | Adds custom validations to the execution pipeline, with access to variables. Comes with an implementation for `@oneOf` directive for input union. |
-| usePreloadAssets           | [`@envelop/preload-assets`](./packages/plugins/preload-assets)               | Register asset that should be prefetched on the client via an extensions field.                                                                   |
-| usePersistedOperations     | [`@envelop/persisted-operations`](./packages/plugins/persisted-operations)   | Simple implementation of persisted operations/queries, based on custom store.                                                                     |
-| useNewRelic     | [`@envelop/newrelic`](./packages/plugins/newrelic)   | Instrument your GraphQL application with New Relic reporting.                                                                       |
-| useLiveQuery     | [`@envelop/live-query`](./packages/plugins/live-query)   | The easiest way of adding live queries to your GraphQL server!                                                                       |
+| Name                         | Package                                                                                  | Description                                                                                                                                       |
+| ---------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| useSchema                    | [`@envelop/core`](./packages/core#useschema)                                             | Simplest plugin to provide your GraphQL schema.                                                                                                   |
+| useErrorHandler              | [`@envelop/core`](./packages/core#useerrorhandler)                                       | Get notified when any execution error occurs.                                                                                                     |
+| useMaskedErrors              | [`@envelop/core`](./packages/core#usemaskederrors)                                       | Hide sensitive/unexpected errors from your clients.                                                                                               |
+| useExtendContext             | [`@envelop/core`](./packages/core#useextendcontext)                                      | Extend execution context based on your needs.                                                                                                     |
+| useLogger                    | [`@envelop/core`](./packages/core#uselogger)                                             | Simple, yet powerful logging for GraphQL execution.                                                                                               |
+| usePayloadFormatter          | [`@envelop/core`](./packages/core#usepayloadformatter)                                   | Format, clean and customize execution result.                                                                                                     |
+| useTiming                    | [`@envelop/core`](./packages/core#usetiming)                                             | Simple timing/tracing mechanism for your execution.                                                                                               |
+| useGraphQLJit                | [`@envelop/graphql-jit`](./packages/plugins/graphql-jit)                                 | Custom executor based on GraphQL-JIT.                                                                                                             |
+| useParserCache               | [`@envelop/parser-cache`](./packages/plugins/parser-cache)                               | Simple LRU for caching `parse` results.                                                                                                           |
+| useValidationCache           | [`@envelop/validation-cache`](./packages/plugins/validation-cache)                       | Simple LRU for caching `validate` results.                                                                                                        |
+| useDepthLimit                | [`@envelop/depth-limit`](./packages/plugins/depth-limit)                                 | Limits the depth of your GraphQL selection sets.                                                                                                  |
+| useDataLoader                | [`@envelop/dataloader`](./packages/plugins/dataloader)                                   | Simply injects a DataLoader instance into your context.                                                                                           |
+| useApolloTracing             | [`@envelop/apollo-tracing`](./packages/plugins/apollo-tracing)                           | Integrates timing with Apollo-Tracing format (for GraphQL Playground)                                                                             |
+| useSentry                    | [`@envelop/sentry`](./packages/plugins/sentry)                                           | Tracks performance, timing and errors and reports it to Sentry.                                                                                   |
+| useOpenTelemetry             | [`@envelop/opentelemetry`](./packages/plugins/opentelemetry)                             | Tracks performance, timing and errors and reports in OpenTelemetry structure.                                                                     |
+| useGenericAuth               | [`@envelop/generic-auth`](./packages/plugins/generic-auth)                               | Super flexible authentication, also supports `@auth` directive .                                                                                  |
+| useAuth0                     | [`@envelop/auth0`](./packages/plugins/auth0)                                             | Validates Auth0 JWT tokens and injects the authenticated user to your context.                                                                    |
+| useGraphQLModules            | [`@envelop/graphql-modules`](./packages/plugins/graphql-modules)                         | Integrates the execution lifecycle of GraphQL-Modules.                                                                                            |
+| useGraphQLMiddleware         | [`@envelop/graphql-middleware`](./packages/plugins/graphql-middleware)                   | Integrates middlewares written for `graphql-middleware`                                                                                           |
+| useRateLimiter               | [`@envelop/rate-limiter`](./packages/plugins/rate-limiter)                               | Limit request rate via `@rateLimit` directive                                                                                                     |
+| useDisableIntrospection      | [`@envelop/disable-introspection`](./packages/plugins/disable-introspection)             | Disables introspection by adding a validation rule                                                                                                |
+| useFilterAllowedOperations   | [`@envelop/filter-operation-type`](./packages/plugins/filter-operation-type)             | Only allow execution of specific operation types                                                                                                  |
+| useExtendedValidation        | [`@envelop/extended-validation`](./packages/plugins/extended-validation)                 | Adds custom validations to the execution pipeline, with access to variables. Comes with an implementation for `@oneOf` directive for input union. |
+| usePreloadAssets             | [`@envelop/preload-assets`](./packages/plugins/preload-assets)                           | Register asset that should be prefetched on the client via an extensions field.                                                                   |
+| usePersistedOperations       | [`@envelop/persisted-operations`](./packages/plugins/persisted-operations)               | Simple implementation of persisted operations/queries, based on custom store.                                                                     |
+| useNewRelic                  | [`@envelop/newrelic`](./packages/plugins/newrelic)                                       | Instrument your GraphQL application with New Relic reporting.                                                                                     |
+| useLiveQuery                 | [`@envelop/live-query`](./packages/plugins/live-query)                                   | The easiest way of adding live queries to your GraphQL server!                                                                                    |
+| useFragmentArguments         | [`@envelop/fragment-arguments`](./packages/plugins/fragment-arguments)                   | Adds support for using arguments on fragments                                                                                                     |
+| useApolloServerErrors        | [`@envelop/apollo-server-errors`](./packages/plugins/apollo-server-errors)               | Exposes execution error in the same structure as Apollo-Server                                                                                    |
+| useOperationFieldPermissions | [`@envelop/operation-field-permissions`](./packages/plugins/operation-field-permissions) | Extended validation rule for creating user-aware permissions, based on types and fields                                                           |
 
 ## Sharing / Composing `envelop`s
 

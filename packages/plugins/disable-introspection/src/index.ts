@@ -1,10 +1,21 @@
 import { NoSchemaIntrospectionCustomRule } from 'graphql';
-import { Plugin } from '@envelop/types';
+import { Plugin, DefaultContext } from '@envelop/types';
 
-export const useDisableIntrospection = (): Plugin => {
+export interface DisableIntrospectionOptions {
+  disableIf?: (args: { context: DefaultContext; params: Parameters<NonNullable<Plugin['onValidate']>>[0]['params'] }) => boolean;
+}
+
+export const useDisableIntrospection = (options?: DisableIntrospectionOptions): Plugin => {
+  const disableIf = options?.disableIf;
   return {
-    onValidate: ({ addValidationRule }) => {
-      addValidationRule(NoSchemaIntrospectionCustomRule);
-    },
+    onValidate: disableIf
+      ? ({ addValidationRule, context, params }) => {
+          if (disableIf({ context, params })) {
+            addValidationRule(NoSchemaIntrospectionCustomRule);
+          }
+        }
+      : ({ addValidationRule }) => {
+          addValidationRule(NoSchemaIntrospectionCustomRule);
+        },
   };
 };

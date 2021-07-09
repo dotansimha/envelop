@@ -4,62 +4,61 @@ title: What is Envelop?
 
 ## What is Envelop?
 
-`envelop` is a lightweight JavaScript (/TypeScript) library for wrapping GraphQL execution layer and flow, allowing developers to develop, share
+`envelop` is a lightweight JavaScript (/TypeScript) library for customizing the GraphQL execution layer and flow, allowing developers to build, share
 and collaborate on GraphQL-related plugins while filling the missing pieces in GraphQL implementations.
 
-`envelop` aims to extend the GraphQL execution flow by adding plugins that enrichs the feature set of your application. 
-
-* Docs & Plugins Hub: [envelop.dev](https://www.envelop.dev/)
+`envelop` aims to extend the GraphQL execution flow by adding plugins that enrich the feature set of your application.
 
 ## Key Concepts
 
 #### Plugins & community
 
-The `envelop` plugins are  small, reusable, shareable pieces of code, that can be shipped as NPM packages, or as code in your codebase. 
+The `envelop` plugins are small, reusable, shareable pieces of code, that can be shipped as NPM packages, or inlined within your codebase.
 
-As an application developer, you can leverage `envelop` plugins to implement custom features, based on your needs.
+As an application developer, you can leverage `envelop` plugins to customize your GraphQL execution flow, based on your needs.
 
-As as plugin developer, you get the option to contribute to the entire execution pipeline of GraphQL, and share your plugin with others.
+As as plugin developer, you get an standardized interface for sharinge your plugins with others.
 
-The `envelop` plugins are taking part in GraphQL execution pipeline, and can contribute/alter each phase based on their needs.
+The `envelop` plugins are hooking into specific phases within the GraphQL execution pipeline, and can alter each phase based on your needs.
 
-> With `envelop`, you can easily create a wrapper around your common logic, and share it with others.
+> With `envelop`, you can easily wrap your common logic, and share it with others.
 
 #### Lightweight
 
-The core of `envelop` is zero-dependency and will only apply changes to your GraphQL execution based on the plugins you wish to use.
+The core of `envelop` has zero dependencies and will only alter your GraphQL execution based on the plugins you wish to use.
 
-It can be integrated with any GraphQL server that follows [the execution phase, as defined in the GraphQL spec](https://spec.graphql.org/June2018/#sec-Executing-Requests) and let you provide your own lifecycle methods.
+It can be integrated with any GraphQL server that follows [the execution phase, as defined in the GraphQL specification](https://spec.graphql.org/June2018/#sec-Executing-Requests) and lets you provide your own lifecycle methods.
 
 #### Wrap the entire pipeline
 
-`envelop` wraps the entire pipeline of the GraphQL operation execution, so developers to take part if all phases - from `parse`, `validate`, context building, `execute` and more.
+`envelop` wraps the entire pipeline of the GraphQL operation execution, so developers can hook into all the phases - `parse`, `validate`, context building, `execute` and more.
 
-By offering hooks on the entire pipeline, we allow develoeprs to create plugins that adds a complete features to your GraphQL pipeline, without creating spaghetti code, or code that's specific your your application.
+By offering hooks for the entire pipeline, we allow developers to create plugins that add complete features to your GraphQL pipeline, without creating spaghetti code, or code that is specific your your application.
 
-Here's a breakdown of a few `envelop` plugins, and an explanation of how it contributes to the execution pipeline: 
+Here is a breakdown of a few `envelop` plugins, and an explanation of how each of them contribute to the execution pipeline:
 
-- `useLogger` - hooks into the “before” of all phases, and just does `console.log`.
-- `useTiming` - hooks into “before” and “after” of all phases, measures times, and then prints it.
-- `useParserCache` - hooks into before and after the `parse` phase and implements caching based on the operation string. 
-- `useGraphQLJit` - hooks into `execute` phase and replaces the `execute` function with GraphQL-Jit’s executor. 
-- `usePersistedOperations` - hooks into `parse` and replaces the `parse` function with a function that maps a hash into a DocumentNode. 
-- `useGenericAuth` - hooks into context building and resolves the current user from the GraphQL request, then hooks into the `execute` phase to verify the user authentication.
-- `useOpenTelemetry` - hooks into all phases, execution and resolvers, and creates Spans for OpenTelemetry tracing. 
+- `useLogger` - hooks into “before” of all phases, and prints the execution parameters to the console using `console.log`.
+- `useTiming` - hooks into “before” and “after” of all phases, measures times, and then prints them.
+- `useParserCache` - hooks into “before“ and “after“ of the `parse` phase and implements caching based on the operation string.
+- `useGraphQLJit` - hooks into `execute` phase and replaces the `execute` function with GraphQL-Jit’s executor.
+- `usePersistedOperations` - hooks into `parse` and replaces the `parse` function with a function that maps a hash into a DocumentNode.
+- `useGenericAuth` - hooks into context building and resolves the current user from the GraphQL request, then hooks into the `execute` phase to verify the users identity.
+- `useOpenTelemetry` - hooks into all phases, execution and resolvers, and creates Spans for OpenTelemetry tracing.
 
 #### No vendor-locking
 
-We do not aim to provide a complete, vendor-locking suite, since we believe that the developer should be able to adjust any part of their application, at any time, without major implications or refactoring.
+We do not aim to provide a complete, vendor lock-in suite, since we believe that developers should be able to adjust and replace any part of their application, at any time, without major implications or refactoring.
 
-The core implementation of `envelop` is agnostic to the HTTP server you use, and agnostic to the way your define your GraphQL Schema, so it's not a traditional "server" framework (you can create plugins that integrates with your HTTP server, of with your schema framework, if needed)
+The core implementation of `envelop` is agnostic to the HTTP server you use, and agnostic to the way your define your GraphQL Schema, so it is not a traditional "server" framework. Envelop plugins should be developed framework agnostic.
+However, you can still create plugins that include specific logic for your HTTP server - or your schema framework, if necessary.
 
-You can use Envelop with any environment (NodeJS or browser) and any GraphQL workflow (client/server, client-side execute, or server-to-server). 
+Envelop can be used with any environment (Node.js or browser) and any GraphQL workflow (client/server, client-side, or server-to-server).
 
 #### Features are just plugins
 
-Separating the execution workflow and the logic that it runs in each phase allow you to write a reusable piece of code.
+Separating the execution workflow and the logic that it runs in each phase allows you to write reusable pieces of code.
 
-By using plugins that extends your GraphQL execution, you can very easily add features like: 
+By using plugins that extends your GraphQL execution, you can very easily add features like:
 
 - Logging
 - Metric collection
@@ -68,14 +67,13 @@ By using plugins that extends your GraphQL execution, you can very easily add fe
 - Resolvers tracing
 - Authentication
 - Authorization
-- ... and much more ...
 
-And <Text as="span" fontWeight="bold">much more</Text>, without the need to write it explicitly every time in every project or microservice.
+And <Text as="span" fontWeight="bold">much more</Text>, without having to write it explicitly every time for every project or microservice.
 
 #### Sharing Envelops
 
-In many cases, developers are looking for a way to reuse their server setup, as a boilerplate/template.
+Often, developers are looking for a way to reuse their server setup as a boilerplate/template with minimal effort.
 
-`envelop` allow you to create Envelops instances and later share it with others.
+Envelop allows you to create Envelops instances that can be shared easily.
 
-So if you are working in a microservices environment, or in an enterprise that has many servers - you can now share the entire base GraphQL setup in a single variable, and extend it based on your needs.
+If you are working in a microservice environment, or in an enterprise environment with many servers - you can now share the entire base GraphQL setup in envelop plugins, and extend each of the servers based on your needs.

@@ -35,7 +35,7 @@
     "@sentry/tracing": "6.8.0",
     "bob-the-bundler": "1.4.1",
     "graphql": "15.5.1",
-    "typescript": "4.3.4"
+    "typescript": "4.3.5"
   },
   "peerDependencies": {
     "@sentry/node": "^6",

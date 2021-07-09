@@ -204,4 +204,25 @@ export const pluginsArr: RawPlugin[] = [
     iconUrl: '/assets/logos/graphql.png',
     tags: ['utilities'],
   },
+  {
+    identifier: 'use-fragment-arguments',
+    title: 'useFragmentArguments',
+    npmPackage: '@envelop/fragment-arguments',
+    iconUrl: '/assets/logos/graphql.png',
+    tags: ['utilities'],
+  },
+  {
+    identifier: 'use-apollo-server-errors',
+    title: 'useApolloServerErrors',
+    npmPackage: '@envelop/apollo-server-errors',
+    iconUrl: '/assets/logos/apollo.png',
+    tags: ['utilities', 'error-handling'],
+  },
+  {
+    identifier: 'use-operation-field-permissions',
+    title: 'useOperationFieldPermissions',
+    npmPackage: '@envelop/operation-field-permissions',
+    iconUrl: '/assets/logos/graphql.png',
+    tags: ['security', 'authorization'],
+  },
 ];

@@ -10,7 +10,7 @@ export default function Index() {
       </Head>
       <HeroGradient
         title="Envelop: The missing GraphQL plugin system"
-        description={`With Envelop it's easier to develop, collaborate and share GraphQL features with any server, and across GraphQL schemas.`}
+        description={`Develop and share plugins that are usable with any GraphQL server framework or schema.`}
         link={{
           href: '/docs',
           children: 'Get Started',
@@ -29,7 +29,7 @@ export default function Index() {
         }}
       />
       <FeatureList
-        title="What's Envelop?"
+        title="What is Envelop?"
         items={[
           {
             image: {
@@ -45,7 +45,7 @@ export default function Index() {
               src: '/assets/features-modern.png',
             },
             title: 'Flexible',
-            description: 'Use with any HTTP server, and any GraphQL schema libraries (code-first / schema-first).',
+            description: 'Use any HTTP server, and any GraphQL schema (code-first or schema-first).',
           },
           {
             image: {
@@ -53,7 +53,7 @@ export default function Index() {
               src: '/assets/features-performant.png',
             },
             title: 'Develop Faster',
-            description: `You don't have to reinvent the wheel for every feature. You can write/use Envelop plugin for most workflows.`,
+            description: `You don't have to reinvent the wheel for every feature. Write or reuse existing plugins.`,
           },
         ]}
       />
@@ -73,8 +73,8 @@ export default function Index() {
         flipped
       /> */}
       <HeroIllustration
-        title="How it works?"
-        description="Envelop providers a low-level plugin API (based on hooks) for plugins developers. By combining plugins, you can create your own GraphQL 'framework', and get a modified version of GraphQL with the capabilities you need."
+        title="How does it work?"
+        description={`Envelop providers a low-level hook-based plugin API for developers. By combining plugins, you can compose your own GraphQL "framework", and get a modified version of GraphQL with the capabilities you need.`}
         image={{
           src: '/assets/home-communication.png',
           alt: 'Illustration',
@@ -82,12 +82,12 @@ export default function Index() {
         flipped
       />
       <HeroMarketplace
-        title="Plugins Hub"
+        title="Plugin Hub"
         description="Find, explore, try and test plugins for Envelop."
         link={{
           href: '/plugins',
           children: 'Explore plugins',
-          title: 'Learn more about the Plugins Hub',
+          title: 'Learn more about the Plugin Hub',
           onClick: e => handlePushRoute('/plugins', e),
         }}
       />

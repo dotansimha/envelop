@@ -1,5 +1,11 @@
 # @envelop/extended-validation
 
+## 0.2.1
+
+### Patch Changes
+
+- 7fd2f7b: suuport multiple usages of useExtendedValidation
+
 ## 0.2.0
 
 ### Minor Changes

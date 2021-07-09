@@ -33,7 +33,7 @@
     "@graphql-tools/schema": "7.1.5",
     "bob-the-bundler": "1.4.1",
     "graphql": "15.5.1",
-    "typescript": "4.3.4"
+    "typescript": "4.3.5"
   },
   "peerDependencies": {
     "graphql": "^14.0.0 || ^15.0.0"

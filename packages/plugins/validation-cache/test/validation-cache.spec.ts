@@ -11,14 +11,14 @@ describe('useValidationCache', () => {
   `);
 
   let testValidator: jest.Mock<typeof validate>;
-  let useTestPlugin: Plugin;
+  let useTestPlugin: Plugin<any>;
 
   beforeEach(() => {
     testValidator = jest.fn().mockImplementation((source, options) => validate(source, options));
 
     useTestPlugin = {
       onValidate({ setValidationFn }) {
-        setValidationFn((testValidator as any) as typeof validate);
+        setValidationFn(testValidator as any as typeof validate);
       },
     };
   });

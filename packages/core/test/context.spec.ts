@@ -1,5 +1,4 @@
 import { createSpiedPlugin, createTestkit } from '@envelop/testing';
-import { FieldNode, parse, visit } from 'graphql';
 import { schema, query } from './common';
 
 describe('contextFactory', () => {

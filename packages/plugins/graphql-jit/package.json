@@ -34,11 +34,11 @@
     "tiny-lru": "7.0.6"
   },
   "devDependencies": {
-    "graphql-jit": "0.5.1",
+    "graphql-jit": "0.5.2",
     "reflect-metadata": "0.1.13",
     "bob-the-bundler": "1.4.1",
     "graphql": "15.5.1",
-    "typescript": "4.3.4"
+    "typescript": "4.3.5"
   },
   "peerDependencies": {
     "graphql": "^14.0.0 || ^15.0.0"

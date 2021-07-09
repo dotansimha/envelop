@@ -11,4 +11,7 @@ const { getRoutes } = require('./routes.ts');
 module.exports = withGuildDocs({
   i18n,
   getRoutes,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 });

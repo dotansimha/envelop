@@ -1,4 +1,19 @@
-import { AfterCallback, EnvelopContextFnWrapper, OnResolverCalledHooks, Plugin } from '@envelop/types';
+import {
+  AfterParseHook,
+  AfterValidateHook,
+  ArbitraryObject,
+  EnvelopContextFnWrapper,
+  GetEnvelopedFn,
+  OnContextBuildingHook,
+  OnExecuteDoneHook,
+  OnExecuteHook,
+  OnParseHook,
+  OnResolverCalledHook,
+  OnSubscribeHook,
+  OnValidateHook,
+  Plugin,
+  SubscribeResultHook,
+} from '@envelop/types';
 import {
   DocumentNode,
   execute,
@@ -18,17 +33,19 @@ import {
 import { Maybe } from 'graphql/jsutils/Maybe';
 import { prepareTracedSchema, resolversHooksSymbol } from './traced-schema';
 
-export type EnvelopOrchestrator = {
-  parse: EnvelopContextFnWrapper<typeof parse, any>;
-  validate: EnvelopContextFnWrapper<typeof validate, any>;
-  execute: typeof execute;
-  subscribe: typeof subscribe;
-  contextFactory: EnvelopContextFnWrapper<(context?: any) => any, any>;
+export type EnvelopOrchestrator<
+  InitialContext extends ArbitraryObject = ArbitraryObject,
+  PluginsContext extends ArbitraryObject = ArbitraryObject
+> = {
+  parse: EnvelopContextFnWrapper<ReturnType<GetEnvelopedFn<PluginsContext>>['parse'], InitialContext>;
+  validate: EnvelopContextFnWrapper<ReturnType<GetEnvelopedFn<PluginsContext>>['validate'], InitialContext>;
+  execute: ReturnType<GetEnvelopedFn<PluginsContext>>['execute'];
+  subscribe: ReturnType<GetEnvelopedFn<PluginsContext>>['subscribe'];
+  contextFactory: EnvelopContextFnWrapper<ReturnType<GetEnvelopedFn<PluginsContext>>['contextFactory'], PluginsContext>;
   schema: Maybe<GraphQLSchema>;
-  prepareSchema: () => void;
 };
 
-export function createEnvelopOrchestrator(plugins: Plugin[]): EnvelopOrchestrator {
+export function createEnvelopOrchestrator<PluginsContext = any>(plugins: Plugin[]): EnvelopOrchestrator<any, PluginsContext> {
   let schema: GraphQLSchema | undefined | null = null;
   let initDone = false;
 
@@ -36,6 +53,7 @@ export function createEnvelopOrchestrator(plugins: Plugin[]): EnvelopOrchestrato
   // to allow setting the schema from the onPluginInit callback. We also need to make sure
   // here not to call the same plugin that initiated the schema switch.
   const replaceSchema = (newSchema: GraphQLSchema, ignorePluginIndex = -1) => {
+    prepareTracedSchema(newSchema);
     schema = newSchema;
 
     if (initDone) {
@@ -67,11 +85,11 @@ export function createEnvelopOrchestrator(plugins: Plugin[]): EnvelopOrchestrato
 
   // A set of before callbacks defined here in order to allow it to be used later
   const beforeCallbacks = {
-    parse: [] as NonNullable<Plugin['onParse']>[],
-    validate: [] as NonNullable<Plugin['onValidate']>[],
-    subscribe: [] as NonNullable<Plugin['onSubscribe']>[],
-    execute: [] as NonNullable<Plugin['onExecute']>[],
-    context: [] as NonNullable<Plugin['onContextBuilding']>[],
+    parse: [] as OnParseHook<any>[],
+    validate: [] as OnValidateHook<any>[],
+    subscribe: [] as OnSubscribeHook<any>[],
+    execute: [] as OnExecuteHook<any>[],
+    context: [] as OnContextBuildingHook<any>[],
   };
 
   for (const { onContextBuilding, onExecute, onParse, onSubscribe, onValidate } of plugins) {
@@ -83,11 +101,11 @@ export function createEnvelopOrchestrator(plugins: Plugin[]): EnvelopOrchestrato
   }
 
   const customParse: EnvelopContextFnWrapper<typeof parse, any> = beforeCallbacks.parse.length
-    ? sharedObj => (source, parseOptions) => {
+    ? initialContext => (source, parseOptions) => {
         let result: DocumentNode | Error | null = null;
         let parseFn: typeof parse = parse;
-        const context = sharedObj;
-        const afterCalls: AfterCallback<'onParse'>[] = [];
+        const context = initialContext;
+        const afterCalls: AfterParseHook<any>[] = [];
 
         for (const onParse of beforeCallbacks.parse) {
           const afterFn = onParse({
@@ -148,7 +166,8 @@ export function createEnvelopOrchestrator(plugins: Plugin[]): EnvelopOrchestrato
         let result: null | readonly GraphQLError[] = null;
         const context = initialContext;
 
-        const afterCalls: AfterCallback<'onValidate'>[] = [];
+        const afterCalls: AfterValidateHook<any>[] = [];
+
         for (const onValidate of beforeCallbacks.validate) {
           const afterFn = onValidate({
             context,
@@ -204,7 +223,7 @@ export function createEnvelopOrchestrator(plugins: Plugin[]): EnvelopOrchestrato
 
   const customContextFactory: EnvelopContextFnWrapper<(orchestratorCtx?: any) => any, any> = beforeCallbacks.context.length
     ? initialContext => async orchestratorCtx => {
-        const afterCalls: AfterCallback<'onContextBuilding'>[] = [];
+        const afterCalls: OnContextBuildingHook<any>[] = [];
         let context = orchestratorCtx ? { ...initialContext, ...orchestratorCtx } : initialContext;
 
         for (const onContext of beforeCallbacks.context) {
@@ -255,17 +274,14 @@ export function createEnvelopOrchestrator(plugins: Plugin[]): EnvelopOrchestrato
           }
         : argsOrSchema;
 
-    const onResolversHandlers: OnResolverCalledHooks[] = [];
+    const onResolversHandlers: OnResolverCalledHook[] = [];
     let subscribeFn: typeof subscribe = subscribe;
 
-    const afterCalls: ((options: {
-      result: AsyncIterableIterator<ExecutionResult> | ExecutionResult;
-      setResult: (newResult: AsyncIterableIterator<ExecutionResult> | ExecutionResult) => void;
-    }) => void)[] = [];
+    const afterCalls: SubscribeResultHook[] = [];
     let context = args.contextValue || {};
 
     for (const onSubscribe of beforeCallbacks.subscribe) {
-      const after = onSubscribe({
+      const after = await onSubscribe({
         subscribeFn,
         setSubscribeFn: newSubscribeFn => {
           subscribeFn = newSubscribeFn;
@@ -332,18 +348,17 @@ export function createEnvelopOrchestrator(plugins: Plugin[]): EnvelopOrchestrato
               }
             : argsOrSchema;
 
-        const onResolversHandlers: OnResolverCalledHooks[] = [];
+        const onResolversHandlers: OnResolverCalledHook[] = [];
         let executeFn: typeof execute = execute;
         let result: ExecutionResult;
 
-        const afterCalls: ((options: { result: ExecutionResult; setResult: (newResult: ExecutionResult) => void }) => void)[] =
-          [];
+        const afterCalls: OnExecuteDoneHook[] = [];
         let context = args.contextValue || {};
 
         for (const onExecute of beforeCallbacks.execute) {
           let stopCalled = false;
 
-          const after = onExecute({
+          const after = await onExecute({
             executeFn,
             setExecuteFn: newExecuteFn => {
               executeFn = newExecuteFn;
@@ -423,7 +438,6 @@ export function createEnvelopOrchestrator(plugins: Plugin[]): EnvelopOrchestrato
     get schema() {
       return schema;
     },
-    prepareSchema: () => prepareTracedSchema(schema),
     parse: customParse,
     validate: customValidate,
     execute: customExecute,
