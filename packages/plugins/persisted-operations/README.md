@@ -16,33 +16,19 @@ yarn add @envelop/persisted-operations
 import { envelop } from '@envelop/core';
 import { usePersistedOperations } from '@envelop/persisted-operations';
 
+// You can retrieve the store in any way (e.g. from a remote source) and implement it with a Map
+const myStore = new Map();
+myStore.set('persisted_1', parse(`query { ... }`));
+myStore.set('persisted_2', 'query { ... }'));
+
 const getEnveloped = envelop({
   plugins: [
     // ... other plugins ...
     usePersistedOperations({
       store: myStore,
-      onlyPersistedOperations: true, // Change to false, to allow regular operations in addition
     }),
   ],
 });
-```
-
-Store implementation is based on 2 simple functions, you can connect to any data store that holds your Key => Value data.
-
-Here's a simple example for an in-memory store:
-
-```ts
-import { PersistedOperationsStore } from '@envelop/persisted-operations';
-
-// You can implement `data` in any custom way, and even fetch it from a remote store.
-const data: Record<string, DocumentNode> = {
-  persisted_1: parse(`query`),
-};
-
-export const myStore: PersistedOperationsStore = {
-  canHandle: key => key && key.startsWith('persisted_'),
-  get: key => data[key],
-};
 ```
 
 Now, when running operations through your GraphQL server, you can use a key instead of a query language:
@@ -52,6 +38,37 @@ Now, when running operations through your GraphQL server, you can use a key inst
   "query": "persisted_1",
   "variables": {}
 }
+```
+
+You can also provide a function to retrieve the operation id from a custom property available in your context
+
+```ts
+usePersistedOperations({
+  store: myStore,
+  setOperationId: (context) => context.request.body.operationId // get id from custom property in body object
+}),
+```
+
+## Usage Example with built-in Json-Files-Store
+
+```ts
+import { usePersistedOperations, JsonFilesStore } from '@envelop/persisted-operations';
+
+const persistedOperationsPaths = [
+  resolve(process.cwd(), 'assets/client1PersistedOperations.json'),
+  resolve(process.cwd(), 'assets/client2PersistedOperations.json'),
+];
+const persistedOperationsStore = new JsonFilesStore(persistedOperationsPaths);
+await persistedOperationsStore.load(); // load and parse persisted-operations files
+
+const getEnveloped = envelop({
+  plugins: [
+    // ... other plugins ...
+    usePersistedOperations({
+      store: persistedOperationsStore.get(),
+    }),
+  ],
+});
 ```
 
 ## With Relay
