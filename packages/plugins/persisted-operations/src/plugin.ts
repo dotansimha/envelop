@@ -2,6 +2,7 @@ import { Plugin, DefaultContext } from '@envelop/types';
 import { DocumentNode, Source, GraphQLError, parse } from 'graphql';
 
 export type PersistedOperationsStore = Map<string, string | DocumentNode>;
+export type PersistedOperationsFunctionStore = (context: Readonly<DefaultContext>) => PersistedOperationsStore;
 
 export type UsePersistedOperationsOptions = {
   /**
@@ -10,9 +11,10 @@ export type UsePersistedOperationsOptions = {
    */
   onlyPersistedOperations?: boolean;
   /**
-   * The store to use. You can implement any custom store that loads the data from any source.
+   * The store to use. You can implement a store that loads data from any source.
+   * You can even support multiple stores and implement a function that returns one of those stores based on context values.
    */
-  store: PersistedOperationsStore;
+  store: PersistedOperationsStore | PersistedOperationsFunctionStore;
   /**
    * Function that returns the operation id, e.g. by retrieving it from cusotm properties within context
    */
@@ -49,15 +51,24 @@ export const usePersistedOperations = <TOptions extends UsePersistedOperationsOp
   return {
     onParse({ context, params, extendContext, setParsedDocument }) {
       const operationId = options.setOperationId ? options.setOperationId(context) : operationIdFromSource(params.source);
-      const rawResult = operationId && options.store.get(operationId);
+
+      if (!operationId) {
+        if (options.onlyPersistedOperations) throw new GraphQLError('Must provide operation id');
+        return;
+      }
+
+      const store = options.store instanceof Map ? options.store : options.store(context);
+      const rawResult = store.get(operationId);
 
       if (rawResult) {
         const document = typeof rawResult === 'string' ? parse(rawResult) : rawResult; // DocumentNode does not need to be parsed
         if (options.writeToContext) extendContext({ [contextProperty]: operationId } as PluginContext<{ writeToContext: true }>);
-        setParsedDocument(document);
-      } else if (options.onlyPersistedOperations) {
+        return setParsedDocument(document);
+      }
+
+      if (options.onlyPersistedOperations) {
         // we want to throw an error only when "onlyPersistedOperations" is true, otherwise we let execution continue normally
-        throw new GraphQLError(operationId ? `Unable to match operation with id '${operationId}'` : 'Must provide operation id');
+        throw new GraphQLError(`Unable to match operation with id '${operationId}'`);
       }
 
       // if we reach this stage we could not retrieve a persisted operation and we didn't throw any error as onlyPersistedOperations is false
