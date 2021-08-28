@@ -34,12 +34,12 @@
     "reflect-metadata": "0.1.13",
     "graphql-modules": "1.4.4",
     "bob-the-bundler": "1.5.1",
-    "graphql": "15.5.1",
+    "graphql": "16.0.0-rc.1",
     "typescript": "4.4.2"
   },
   "peerDependencies": {
     "graphql-modules": "^1",
-    "graphql": "^14.0.0 || ^15.0.0"
+    "graphql": "^14.0.0 || ^15.0.0 || ^16.0.0"
   },
   "buildOptions": {
     "input": "./src/index.ts"

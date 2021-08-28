@@ -95,7 +95,7 @@ export const ResourceLimitationValidationRule =
                   );
                 } else if ('first' in argumentValues === true && 'last' in argumentValues === false) {
                   // eslint-disable-next-line dot-notation
-                  if (argumentValues['first'] < 1 || argumentValues['first'] > 100) {
+                  if ((argumentValues['first'] as number) < 1 || (argumentValues['first'] as number) > 100) {
                     context.reportError(
                       new GraphQLError(
                         buildInvalidPaginationRangeErrorMessage({
@@ -107,11 +107,11 @@ export const ResourceLimitationValidationRule =
                     );
                   } else {
                     // eslint-disable-next-line dot-notation
-                    nodeCost = argumentValues['first'];
+                    nodeCost = argumentValues['first'] as number;
                   }
                 } else if ('last' in argumentValues === true && 'false' in argumentValues === false) {
                   // eslint-disable-next-line dot-notation
-                  if (argumentValues['last'] < 1 || argumentValues['last'] > 100) {
+                  if ((argumentValues['last'] as number) < 1 || (argumentValues['last'] as number) > 100) {
                     context.reportError(
                       new GraphQLError(
                         buildInvalidPaginationRangeErrorMessage({
@@ -123,7 +123,7 @@ export const ResourceLimitationValidationRule =
                     );
                   } else {
                     // eslint-disable-next-line dot-notation
-                    nodeCost = argumentValues['last'];
+                    nodeCost = argumentValues['last'] as number;
                   }
                 } else {
                   context.reportError(

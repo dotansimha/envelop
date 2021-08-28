@@ -11,7 +11,7 @@ import {
   ExecutionArgs,
 } from 'graphql';
 import {
-  AsyncIterableIteratorOrValue,
+  AsyncGeneratorOrValue,
   ExecuteFunction,
   PolymorphicExecuteArguments,
   PolymorphicSubscribeArguments,
@@ -73,15 +73,15 @@ function getSubscribeArgs(args: PolymorphicSubscribeArguments): SubscriptionArgs
  * Utility function for making a subscribe function that handles polymorphic arguments.
  */
 export const makeSubscribe = (
-  subscribeFn: (args: SubscriptionArgs) => PromiseOrValue<AsyncIterableIterator<ExecutionResult> | ExecutionResult>
+  subscribeFn: (args: SubscriptionArgs) => PromiseOrValue<AsyncGeneratorOrValue<ExecutionResult>>
 ): SubscribeFunction =>
-  ((...polyArgs: PolymorphicSubscribeArguments): PromiseOrValue<AsyncIterableIterator<ExecutionResult> | ExecutionResult> =>
+  ((...polyArgs: PolymorphicSubscribeArguments): PromiseOrValue<AsyncGeneratorOrValue<ExecutionResult>> =>
     subscribeFn(getSubscribeArgs(polyArgs))) as SubscribeFunction;
 
 export async function* mapAsyncIterator<TInput, TOutput = TInput>(
-  asyncIterable: AsyncIterableIterator<TInput>,
+  asyncIterable: AsyncGenerator<TInput, void, void> | AsyncIterable<TInput>,
   map: (input: TInput) => Promise<TOutput> | TOutput
-): AsyncIterableIterator<TOutput> {
+): AsyncGenerator<TOutput, void, void> {
   for await (const value of asyncIterable) {
     yield map(value);
   }
@@ -106,15 +106,15 @@ function getExecuteArgs(args: PolymorphicExecuteArguments): ExecutionArgs {
  * Utility function for making a execute function that handles polymorphic arguments.
  */
 export const makeExecute = (
-  executeFn: (args: ExecutionArgs) => PromiseOrValue<AsyncIterableIteratorOrValue<ExecutionResult>>
+  executeFn: (args: ExecutionArgs) => PromiseOrValue<AsyncGeneratorOrValue<ExecutionResult>>
 ): ExecuteFunction =>
-  ((...polyArgs: PolymorphicExecuteArguments): PromiseOrValue<AsyncIterableIteratorOrValue<ExecutionResult>> =>
+  ((...polyArgs: PolymorphicExecuteArguments): PromiseOrValue<AsyncGeneratorOrValue<ExecutionResult>> =>
     executeFn(getExecuteArgs(polyArgs))) as ExecuteFunction;
 
 export async function* finalAsyncIterator<TInput>(
-  asyncIterable: AsyncIterableIterator<TInput>,
+  asyncIterable: AsyncGenerator<TInput, void, void>,
   onFinal: () => void
-): AsyncIterableIterator<TInput> {
+): AsyncGenerator<TInput, void, void> {
   try {
     yield* asyncIterable;
   } finally {

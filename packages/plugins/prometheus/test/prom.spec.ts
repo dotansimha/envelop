@@ -2,8 +2,13 @@ import { PrometheusTracingPluginConfig, usePrometheus, createHistogram, createCo
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { assertSingleExecutionValue, createTestkit } from '@envelop/testing';
 import { Registry, Histogram, Counter } from 'prom-client';
-import { print } from 'graphql';
+import { ASTNode, print as graphQLPrint } from 'graphql';
 import { useExtendContext } from '@envelop/core';
+
+// Graphql.js 16 and 15 produce different results
+// Graphql.js 16 output has not trailing \n
+// In order to produce the same output we remove any trailing white-space
+const print = (ast: ASTNode) => graphQLPrint(ast).replace(/^\s+|\s+$/g, '');
 
 describe('Prom Metrics plugin', () => {
   const schema = makeExecutableSchema({
@@ -167,7 +172,7 @@ describe('Prom Metrics plugin', () => {
       expect(result.errors).toBeUndefined();
       expect(await metricCount('graphql_envelop_error_result')).toBe(0);
       expect(await metricCount('test_parse', 'count')).toBe(1);
-      expect(await metricString('test_parse')).toContain(`test_parse_count{opText=\"{\\n  regularField\\n}\\n\"} 1`);
+      expect(await metricString('test_parse')).toContain(`test_parse_count{opText=\"{\\n  regularField\\n}\"} 1`);
     });
   });
 
@@ -199,7 +204,7 @@ describe('Prom Metrics plugin', () => {
       expect(result.errors).toBeUndefined();
       expect(await metricCount('graphql_envelop_error_result')).toBe(0);
       expect(await metricCount('test_validate', 'count')).toBe(1);
-      expect(await metricString('test_validate')).toContain(`test_validate_count{opText=\"{\\n  regularField\\n}\\n\"} 1`);
+      expect(await metricString('test_validate')).toContain(`test_validate_count{opText=\"{\\n  regularField\\n}\"} 1`);
     });
 
     it('should register to onValidate event when needed', () => {
@@ -271,7 +276,7 @@ describe('Prom Metrics plugin', () => {
       expect(result.errors).toBeUndefined();
       expect(await metricCount('graphql_envelop_error_result')).toBe(0);
       expect(await metricCount('test_context', 'count')).toBe(1);
-      expect(await metricString('test_context')).toContain(`test_context_count{opText=\"{\\n  regularField\\n}\\n\"} 1`);
+      expect(await metricString('test_context')).toContain(`test_context_count{opText=\"{\\n  regularField\\n}\"} 1`);
     });
 
     it('Should trace contextBuilding timing', async () => {
@@ -320,7 +325,7 @@ describe('Prom Metrics plugin', () => {
       expect(result.errors).toBeUndefined();
       expect(await metricCount('graphql_envelop_error_result')).toBe(0);
       expect(await metricCount('test_execute', 'count')).toBe(1);
-      expect(await metricString('test_execute')).toContain(`test_execute_count{opText=\"{\\n  regularField\\n}\\n\"} 1`);
+      expect(await metricString('test_execute')).toContain(`test_execute_count{opText=\"{\\n  regularField\\n}\"} 1`);
     });
 
     it('Should trace error during execute with a single error', async () => {
@@ -398,9 +403,7 @@ describe('Prom Metrics plugin', () => {
 
       expect(result.errors?.length).toBe(1);
       expect(await metricCount('test_error')).toBe(1);
-      expect(await metricString('test_error')).toContain(
-        `test_error{opText=\"{\\n  errorField\\n}\\n\",errorMessage=\"error\"} 1`
-      );
+      expect(await metricString('test_error')).toContain(`test_error{opText=\"{\\n  errorField\\n}\",errorMessage=\"error\"} 1`);
     });
 
     it('Should not trace parse errors when not needed', async () => {

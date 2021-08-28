@@ -20,11 +20,13 @@ describe('useApolloTracing', () => {
     expect(result.errors).toBeUndefined();
     expect(result.data).toBeDefined();
     expect(result.extensions?.tracing).toBeDefined();
-    expect(result.extensions?.tracing.duration).toBeGreaterThan(1000000000);
-    expect(result.extensions?.tracing.execution.resolvers[0].duration).toBeGreaterThan(990000000);
-    expect(result.extensions?.tracing.execution.resolvers[0].path).toEqual(['foo']);
-    expect(result.extensions?.tracing.execution.resolvers[0].parentType).toBe('Query');
-    expect(result.extensions?.tracing.execution.resolvers[0].fieldName).toBe('foo');
-    expect(result.extensions?.tracing.execution.resolvers[0].returnType).toBe('String');
+    // If you wonder why, we do this all for v16 compat which changed types of extensions to unknown
+    const tracing: any = result.extensions?.tracing;
+    expect(tracing.duration).toBeGreaterThan(1000000000);
+    expect(tracing.execution.resolvers[0].duration).toBeGreaterThan(990000000);
+    expect(tracing.execution.resolvers[0].path).toEqual(['foo']);
+    expect(tracing.execution.resolvers[0].parentType).toBe('Query');
+    expect(tracing.execution.resolvers[0].fieldName).toBe('foo');
+    expect(tracing.execution.resolvers[0].returnType).toBe('String');
   });
 });

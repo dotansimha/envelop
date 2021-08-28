@@ -114,7 +114,7 @@ export function extractDeprecatedFields(node: ASTNode, typeInfo: TypeInfo): Depr
       Field: () => {
         const field = typeInfo.getFieldDef();
 
-        if (field && field.isDeprecated) {
+        if (field && (field.deprecationReason != null || (field as any).isDeprecated)) {
           found.push({
             fieldName: field.name,
             typeName: typeInfo.getParentType()!.name || '',

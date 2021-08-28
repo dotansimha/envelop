@@ -6,6 +6,8 @@ export const ONE_OF_DIRECTIVE_SDL = /* GraphQL */ `
   directive @oneOf on INPUT_OBJECT | FIELD_DEFINITION
 `;
 
+type VariableValue = null | undefined | string | number | VariableValue[] | { [key: string]: VariableValue };
+
 export const OneOfInputObjectsRule: ExtendedValidationRule = (validationContext, executionArgs) => {
   return {
     Field: node => {
@@ -38,15 +40,13 @@ export const OneOfInputObjectsRule: ExtendedValidationRule = (validationContext,
           const argType = fieldType.args.find(typeArg => typeArg.name === arg.name.value);
 
           if (argType) {
-            traverseVariables(validationContext, arg, argType.type, values[arg.name.value]);
+            traverseVariables(validationContext, arg, argType.type, values[arg.name.value] as VariableValue);
           }
         }
       }
     },
   };
 };
-
-type VariableValue = null | undefined | string | number | VariableValue[] | { [key: string]: VariableValue };
 
 function traverseVariables(
   validationContext: ValidationContext,

@@ -266,7 +266,8 @@ function applyResponseCacheLogic(schema: GraphQLSchema, idFieldNames: Array<stri
           ...fieldConfig,
           resolve(src, args, context, info) {
             const result = (fieldConfig.resolve ?? defaultFieldResolver)(src, args, context, info);
-            runWith(result, (id: string) => {
+            // result must be of type string
+            runWith(result, id => {
               if (contextSymbol in context) {
                 const ctx: Context = context[contextSymbol];
                 if (ctx.ignoredTypesMap.has(typename)) {
@@ -276,6 +277,8 @@ function applyResponseCacheLogic(schema: GraphQLSchema, idFieldNames: Array<stri
                   ctx.skip = true;
                   return;
                 }
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore  TODO: investigate what to do if id is something unexpected
                 ctx.identifier.set(`${typename}:${id}`, { typename, id });
                 ctx.types.add(typename);
                 if (typename in ctx.ttlPerType) {

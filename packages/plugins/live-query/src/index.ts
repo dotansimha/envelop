@@ -15,7 +15,8 @@ export const GraphQLLiveDirectiveSDL = print(GraphQLLiveDirectiveAST);
 export const useLiveQuery = (opts: UseLiveQueryOptions): Plugin => {
   return {
     onExecute: ({ executeFn, setExecuteFn }) => {
-      // @ts-expect-error: execute typings do not include AsyncIterable return right now
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore  execute typings do not include AsyncIterable return right now
       setExecuteFn(opts.liveQueryStore.makeExecute(executeFn));
     },
     onValidate: ({ addValidationRule }) => {

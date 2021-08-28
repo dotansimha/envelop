@@ -69,7 +69,8 @@
   "resolutions": {
     "@changesets/git": "1.1.1",
     "esbuild": "^0.12.12",
-    "prettier": "2.3.2"
+    "prettier": "2.3.2",
+    "graphql": "16.0.0-rc.1"
   },
   "lint-staged": {
     "packages/**/src/**/*.{ts,tsx}": [

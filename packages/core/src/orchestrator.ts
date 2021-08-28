@@ -22,7 +22,7 @@ import {
   OnExecuteDoneHookResultOnNextHook,
   OnExecuteDoneHookResultOnEndHook,
   ExecuteFunction,
-  AsyncIterableIteratorOrValue,
+  AsyncGeneratorOrValue,
   isAsyncIterable,
 } from '@envelop/types';
 import {
@@ -277,12 +277,12 @@ export function createEnvelopOrchestrator<PluginsContext = any>(plugins: Plugin[
       }
     : initialContext => orchestratorCtx => orchestratorCtx ? { ...initialContext, ...orchestratorCtx } : initialContext;
 
-  const customSubscribe = makeSubscribe(async args => {
+  const customSubscribe: typeof subscribe = makeSubscribe(async args => {
     const onResolversHandlers: OnResolverCalledHook[] = [];
     let subscribeFn = subscribe as SubscribeFunction;
 
     const afterCalls: SubscribeResultHook[] = [];
-    let context = args.contextValue || {};
+    let context: object = (args.contextValue as any) || {};
 
     for (const onSubscribe of beforeCallbacks.subscribe) {
       const after = await onSubscribe({
@@ -310,10 +310,12 @@ export function createEnvelopOrchestrator<PluginsContext = any>(plugins: Plugin[
       context[resolversHooksSymbol] = onResolversHandlers;
     }
 
-    let result = await subscribeFn({
+    let result = (await subscribeFn({
       ...args,
       contextValue: context,
-    });
+      // Casted for GraphQL.js 15 compatibility
+      // Can be removed once we drop support for GraphQL.js 15
+    })) as AsyncGenerator<ExecutionResult, void, void> | ExecutionResult;
 
     const onNextHandler: OnSubscribeResultResultOnNextHook[] = [];
     const onEndHandler: OnSubscribeResultResultOnEndHook[] = [];
@@ -357,10 +359,10 @@ export function createEnvelopOrchestrator<PluginsContext = any>(plugins: Plugin[
     ? makeExecute(async args => {
         const onResolversHandlers: OnResolverCalledHook[] = [];
         let executeFn = execute as ExecuteFunction;
-        let result: AsyncIterableIteratorOrValue<ExecutionResult>;
+        let result: AsyncGeneratorOrValue<ExecutionResult>;
 
         const afterCalls: OnExecuteDoneHook[] = [];
-        let context = args.contextValue || {};
+        let context: object = (args.contextValue as any) || {};
 
         for (const onExecute of beforeCallbacks.execute) {
           let stopCalled = false;
@@ -409,10 +411,12 @@ export function createEnvelopOrchestrator<PluginsContext = any>(plugins: Plugin[
           context[resolversHooksSymbol] = onResolversHandlers;
         }
 
-        result = await executeFn({
+        result = (await executeFn({
           ...args,
           contextValue: context,
-        });
+          // Casted for defer/stream compatibility
+          // Can be removed once we drop support for GraphQL.js 16 (and GraphQL.js 17 actually introduced defer/stream support...)
+        })) as AsyncGeneratorOrValue<ExecutionResult>;
 
         const onNextHandler: OnExecuteDoneHookResultOnNextHook[] = [];
         const onEndHandler: OnExecuteDoneHookResultOnEndHook[] = [];

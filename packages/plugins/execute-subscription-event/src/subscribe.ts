@@ -1,8 +1,6 @@
 import { createSourceEventStream } from 'graphql';
-
-import { ExecuteFunction, makeSubscribe, SubscribeFunction } from '@envelop/core';
+import { ExecuteFunction, makeSubscribe, mapAsyncIterator, SubscribeFunction } from '@envelop/core';
 import { isAsyncIterable } from '@envelop/types';
-import mapAsyncIterator from 'graphql/subscription/mapAsyncIterator';
 
 /**
  * This is a almost identical port from graphql-js subscribe.
@@ -33,7 +31,7 @@ export const subscribe = (execute: ExecuteFunction): SubscribeFunction =>
     // the GraphQL specification. The `execute` function provides the
     // "ExecuteSubscriptionEvent" algorithm, as it is nearly identical to the
     // "ExecuteQuery" algorithm, for which `execute` is also used.
-    const mapSourceToResponse = async (payload: object) =>
+    const mapSourceToResponse = async (payload: unknown) =>
       execute({
         schema,
         document,

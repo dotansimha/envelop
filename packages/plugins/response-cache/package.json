@@ -33,14 +33,14 @@
     "@graphql-tools/utils": "8.1.2",
     "@types/lru-cache": "5.1.1",
     "bob-the-bundler": "1.4.1",
-    "graphql": "15.5.1",
+    "graphql": "16.0.0-rc.1",
     "typescript": "4.4.2"
   },
   "dependencies": {
     "lru-cache": "^6.0.0"
   },
   "peerDependencies": {
-    "graphql": "^14.0.0 || ^15.0.0"
+    "graphql": "^14.0.0 || ^15.0.0 || ^16.0.0"
   },
   "buildOptions": {
     "input": "./src/index.ts"

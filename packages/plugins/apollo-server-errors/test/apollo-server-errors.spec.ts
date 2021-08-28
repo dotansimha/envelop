@@ -5,6 +5,13 @@ import { envelop, useSchema } from '@envelop/core';
 import { useApolloServerErrors } from '../src';
 import { assertSingleExecutionValue } from '@envelop/testing';
 
+// Fix compat by mocking broken function
+// we can remove this once apollo fixed legacy usages of execute(schema, ...args)
+// aka when https://github.com/apollographql/apollo-server/pull/5662 or rather https://github.com/apollographql/apollo-server/pull/5664 has been released
+jest.mock('../../../../node_modules/apollo-server-core/dist/utils/schemaHash', () => ({
+  generateSchemaHash: () => 'noop',
+}));
+
 describe('useApolloServerErrors', () => {
   const executeBoth = async (schema: GraphQLSchema, query: string, debug: boolean) => {
     const apolloServer = new ApolloServerBase({ schema, debug });

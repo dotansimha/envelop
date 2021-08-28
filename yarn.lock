@@ -6502,17 +6502,10 @@ graphql-ws@^4.4.2:
   resolved "https://registry.yarnpkg.com/graphql-ws/-/graphql-ws-4.4.2.tgz#f2d83f1863ba3069117199311d664fd28f4aaa8e"
   integrity sha512-Cz+t1w+8+tiHIKzcz45tMwrxJpPSQ7KNjQrfN8ADAELECkkBB7aSvAgpShWz0Tne8teH/UxzJsULObLVq5eMvQ==
 
-graphql@15.5.1:
-  version "15.5.1"
-  resolved "https://registry.yarnpkg.com/graphql/-/graphql-15.5.1.tgz#f2f84415d8985e7b84731e7f3536f8bb9d383aad"
-  integrity sha512-FeTRX67T3LoE3LWAxxOlW2K3Bz+rMYAC18rRguK4wgXaTZMiJwSUwDmPFo3UadAKbzirKIg5Qy+sNJXbpPRnQw==
-
-graphql@^14.5.3:
-  version "14.7.0"
-  resolved "https://registry.npmjs.org/graphql/-/graphql-14.7.0.tgz#7fa79a80a69be4a31c27dda824dc04dac2035a72"
-  integrity sha512-l0xWZpoPKpppFzMfvVyFmp9vLN7w/ZZJPefUicMCepfJeQ8sMcztloGYY9DfjVPo6tIUDzU5Hw3MUbIjj9AVVA==
-  dependencies:
-    iterall "^1.2.2"
+graphql@15.5.1, graphql@16.0.0-rc.1, graphql@^14.5.3:
+  version "16.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/graphql/-/graphql-16.0.0-rc.1.tgz#745761de02ed87dbb3b901d202e5faf9a9146d9d"
+  integrity sha512-xcRTeAggyCVGij7mDl+HK57cbeCh45XLQHwZwVmKsBWA1tuXaKwj0b+H2o9MqkgrgNFJolYIkm8u7SOqcHWrsA==
 
 gray-matter@^4.0.3:
   version "4.0.3"
@@ -7388,7 +7381,7 @@ istanbul-reports@^3.0.2:
     html-escaper "^2.0.0"
     istanbul-lib-report "^3.0.0"
 
-iterall@^1.1.3, iterall@^1.2.1, iterall@^1.2.2, iterall@^1.3.0:
+iterall@^1.1.3, iterall@^1.2.1, iterall@^1.3.0:
   version "1.3.0"
   resolved "https://registry.npmjs.org/iterall/-/iterall-1.3.0.tgz#afcb08492e2915cbd8a0884eb93a8c94d0d72fea"
   integrity sha512-QZ9qOMdF+QLHxy1QIpUHUU1D5pS2CG2P69LF6L6CPjPYA/XMOmKV3PZpawHoAjHNyB0swdVTRxdYT4tbBbxqwg==

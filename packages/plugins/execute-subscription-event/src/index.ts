@@ -30,6 +30,9 @@ export const useExtendContextValuePerExecuteSubscriptionEvent = <TContextValue =
         try {
           return execute({
             ...executionArgs,
+            // GraphQL.js 16 changed the type of contextValue to unknown
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             contextValue: { ...executionArgs.contextValue, ...context?.contextPartial },
           });
         } finally {

@@ -5,9 +5,9 @@ import {
   GraphQLString,
   GraphQLID,
   GraphQLInt,
-  GraphQLNonNull,
   GraphQLSchema,
   GraphQLBoolean,
+  GraphQLNonNull,
   GraphQLList,
 } from 'graphql';
 import { assertSingleExecutionValue, createTestkit } from '@envelop/testing';
@@ -52,7 +52,7 @@ describe('oneOf', () => {
     name: 'User',
     fields: {
       id: {
-        type: GraphQLNonNull(GraphQLID),
+        type: new GraphQLNonNull(GraphQLID),
       },
     },
   });
@@ -74,7 +74,7 @@ describe('oneOf', () => {
     name: 'NestedOneOfFieldInput',
     fields: {
       field: {
-        type: GraphQLNonNull(GraphQLUserUniqueCondition),
+        type: new GraphQLNonNull(GraphQLUserUniqueCondition),
       },
     },
   });
@@ -82,7 +82,7 @@ describe('oneOf', () => {
     name: 'DeeplyNestedOneOfFieldInput',
     fields: {
       field: {
-        type: GraphQLNonNull(GraphQLNestedOneOfFieldInput),
+        type: new GraphQLNonNull(GraphQLNestedOneOfFieldInput),
       },
     },
   });
@@ -90,7 +90,7 @@ describe('oneOf', () => {
     name: 'ListOneOfInput',
     fields: {
       items: {
-        type: GraphQLList(GraphQLNonNull(GraphQLUserUniqueCondition)),
+        type: new GraphQLList(new GraphQLNonNull(GraphQLUserUniqueCondition)),
       },
     },
   });
@@ -129,7 +129,7 @@ describe('oneOf', () => {
         type: GraphQLBoolean,
         args: {
           input: {
-            type: GraphQLNonNull(GraphQLNestedOneOfFieldInput),
+            type: new GraphQLNonNull(GraphQLNestedOneOfFieldInput),
           },
         },
       },
@@ -145,7 +145,7 @@ describe('oneOf', () => {
         type: GraphQLBoolean,
         args: {
           input: {
-            type: GraphQLList(GraphQLNonNull(GraphQLUserUniqueCondition)),
+            type: new GraphQLList(new GraphQLNonNull(GraphQLUserUniqueCondition)),
           },
         },
       },
