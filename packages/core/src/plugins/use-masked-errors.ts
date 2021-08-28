@@ -7,14 +7,16 @@ export class EnvelopError extends GraphQLError {
   }
 }
 
-export type FormatErrorHandler = (error: GraphQLError) => GraphQLError;
+export type FormatErrorHandler = (error: GraphQLError | unknown) => GraphQLError;
 
 export const formatError: FormatErrorHandler = err => {
-  if (err.originalError && err.originalError instanceof EnvelopError === false) {
-    return new GraphQLError('Unexpected error.', err.nodes, err.source, err.positions, err.path, undefined);
+  if (err instanceof GraphQLError) {
+    if (err.originalError && err.originalError instanceof EnvelopError === false) {
+      return new GraphQLError('Unexpected error.', err.nodes, err.source, err.positions, err.path, undefined);
+    }
+    return err;
   }
-
-  return err;
+  return new GraphQLError('Unexpected error.');
 };
 
 export type UseMaskedErrorsOpts = {
@@ -34,10 +36,25 @@ export const useMaskedErrors = (opts?: UseMaskedErrorsOpts): Plugin => {
   const handleResult = makeHandleResult(format);
 
   return {
+    onPluginInit(context) {
+      context.registerContextErrorHandler(({ error, setError }) => {
+        setError(formatError(error));
+      });
+    },
     onExecute() {
       return {
         onExecuteDone(payload) {
           return handleStreamOrSingleExecutionResult(payload, handleResult);
+        },
+      };
+    },
+    onSubscribe() {
+      return {
+        onSubscribeResult(payload) {
+          return handleStreamOrSingleExecutionResult(payload, handleResult);
+        },
+        onSubscribeError({ error, setError }) {
+          setError(formatError(error));
         },
       };
     },

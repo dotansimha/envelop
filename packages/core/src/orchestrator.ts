@@ -24,6 +24,8 @@ import {
   ExecuteFunction,
   AsyncIterableIteratorOrValue,
   isAsyncIterable,
+  OnContextErrorHandler,
+  SubscribeErrorHook,
 } from '@envelop/types';
 import {
   DocumentNode,
@@ -39,7 +41,7 @@ import {
 } from 'graphql';
 import { Maybe } from 'graphql/jsutils/Maybe';
 import { prepareTracedSchema, resolversHooksSymbol } from './traced-schema';
-import { finalAsyncIterator, makeExecute, makeSubscribe, mapAsyncIterator } from './utils';
+import { errorAsyncIterator, finalAsyncIterator, makeExecute, makeSubscribe, mapAsyncIterator } from './utils';
 
 export type EnvelopOrchestrator<
   InitialContext extends ArbitraryObject = ArbitraryObject,
@@ -80,6 +82,8 @@ export function createEnvelopOrchestrator<PluginsContext = any>(plugins: Plugin[
     }
   };
 
+  const contextErrorHandlers: Array<OnContextErrorHandler> = [];
+
   // Iterate all plugins and trigger onPluginInit
   for (const [i, plugin] of plugins.entries()) {
     plugin.onPluginInit &&
@@ -89,6 +93,7 @@ export function createEnvelopOrchestrator<PluginsContext = any>(plugins: Plugin[
           plugins.push(newPlugin);
         },
         setSchema: modifiedSchema => replaceSchema(modifiedSchema, i),
+        registerContextErrorHandler: handler => contextErrorHandlers.push(handler),
       });
   }
 
@@ -251,29 +256,44 @@ export function createEnvelopOrchestrator<PluginsContext = any>(plugins: Plugin[
   const customContextFactory: EnvelopContextFnWrapper<(orchestratorCtx?: any) => any, any> = beforeCallbacks.context.length
     ? initialContext => async orchestratorCtx => {
         const afterCalls: OnContextBuildingHook<any>[] = [];
-        let context = orchestratorCtx ? { ...initialContext, ...orchestratorCtx } : initialContext;
 
-        for (const onContext of beforeCallbacks.context) {
-          const afterFn = await onContext({
-            context,
-            extendContext: extension => {
-              context = { ...context, ...extension };
-            },
-          });
+        try {
+          let context = orchestratorCtx ? { ...initialContext, ...orchestratorCtx } : initialContext;
 
-          afterFn && afterCalls.push(afterFn);
+          for (const onContext of beforeCallbacks.context) {
+            const afterHookResult = await onContext({
+              context,
+              extendContext: extension => {
+                context = { ...context, ...extension };
+              },
+            });
+
+            if (typeof afterHookResult === 'function') {
+              afterCalls.push(afterHookResult);
+            }
+          }
+
+          for (const afterCb of afterCalls) {
+            afterCb({
+              context,
+              extendContext: extension => {
+                context = { ...context, ...extension };
+              },
+            });
+          }
+          return context;
+        } catch (err) {
+          let error: unknown = err;
+          for (const errorCb of contextErrorHandlers) {
+            errorCb({
+              error,
+              setError: err => {
+                error = err;
+              },
+            });
+          }
+          throw error;
         }
-
-        for (const afterCb of afterCalls) {
-          afterCb({
-            context,
-            extendContext: extension => {
-              context = { ...context, ...extension };
-            },
-          });
-        }
-
-        return context;
       }
     : initialContext => orchestratorCtx => orchestratorCtx ? { ...initialContext, ...orchestratorCtx } : initialContext;
 
@@ -282,6 +302,8 @@ export function createEnvelopOrchestrator<PluginsContext = any>(plugins: Plugin[
     let subscribeFn = subscribe as SubscribeFunction;
 
     const afterCalls: SubscribeResultHook[] = [];
+    const subscribeErrorHandlers: SubscribeErrorHook[] = [];
+
     let context = args.contextValue || {};
 
     for (const onSubscribe of beforeCallbacks.subscribe) {
@@ -299,6 +321,9 @@ export function createEnvelopOrchestrator<PluginsContext = any>(plugins: Plugin[
       if (after) {
         if (after.onSubscribeResult) {
           afterCalls.push(after.onSubscribeResult);
+        }
+        if (after.onSubscribeError) {
+          subscribeErrorHandlers.push(after.onSubscribeError);
         }
         if (after.onResolverCalled) {
           onResolversHandlers.push(after.onResolverCalled);
@@ -350,6 +375,22 @@ export function createEnvelopOrchestrator<PluginsContext = any>(plugins: Plugin[
         }
       });
     }
+
+    if (subscribeErrorHandlers.length && isAsyncIterable(result)) {
+      result = errorAsyncIterator(result, err => {
+        let error = err;
+        for (const handler of subscribeErrorHandlers) {
+          handler({
+            error,
+            setError: err => {
+              error = err;
+            },
+          });
+        }
+        throw error;
+      });
+    }
+
     return result;
   });
 

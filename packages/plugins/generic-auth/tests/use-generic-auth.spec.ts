@@ -47,6 +47,7 @@ describe('useGenericAuth', () => {
     });
 
     it('Should prevent execution when user is not authenticated correctly', async () => {
+      expect.assertions(1);
       const testInstance = createTestkit(
         [
           useGenericAuth({
@@ -57,11 +58,11 @@ describe('useGenericAuth', () => {
         schema
       );
 
-      const result = await testInstance.execute(`query { test }`);
-      assertSingleExecutionValue(result);
-      expect(result.errors!.length).toBe(1);
-      expect(result.errors![0].message).toBe('Unauthenticated!');
-      expect(result.errors![0].path).toBeUndefined();
+      try {
+        await testInstance.execute(`query { test }`);
+      } catch (err) {
+        expect(err).toMatchInlineSnapshot(`[GraphQLError: Unauthenticated!]`);
+      }
     });
 
     it('Should inject currentUser into the context when the user is valid', async () => {

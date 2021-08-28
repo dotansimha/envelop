@@ -37,6 +37,17 @@ export type OnSchemaChangeEventPayload = { schema: GraphQLSchema; replaceSchema:
  */
 export type OnSchemaChangeHook = (options: OnSchemaChangeEventPayload) => void;
 
+export type OnContextErrorHandlerPayload = {
+  /** The error or thing that got rejected or thrown */
+  error: unknown;
+  /** Overwrite the error or thing that got rejected or thrown. */
+  setError: (err: unknown) => void;
+};
+
+export type OnContextErrorHandler = (options: OnContextErrorHandlerPayload) => PromiseOrValue<void>;
+
+export type RegisterContextErrorHandler = (handler: OnContextErrorHandler) => void;
+
 /**
  * Payload forwarded to the onPluginInit hook.
  */
@@ -53,6 +64,10 @@ export type OnPluginInitEventPayload = {
    * Set the GraphQL schema.
    */
   setSchema: SetSchemaFn;
+  /**
+   * Register an error handler used for context creation.
+   */
+  registerContextErrorHandler: RegisterContextErrorHandler;
 };
 
 /**
@@ -467,11 +482,22 @@ export type OnSubscribeResultResult = {
  */
 export type SubscribeResultHook = (options: OnSubscribeResultEventPayload) => void | OnSubscribeResultResult;
 
+export type SubscribeErrorHookPayload = {
+  error: unknown;
+  setError: (err: unknown) => void;
+};
+
+export type SubscribeErrorHook = (payload: SubscribeErrorHookPayload) => void;
+
 export type OnSubscribeHookResult<ContextType> = {
   /**
    * Invoked with the result returned from subscribe.
    */
   onSubscribeResult?: SubscribeResultHook;
+  /**
+   * Invoked if the source stream returned from subscribe throws an error.
+   */
+  onSubscribeError?: SubscribeErrorHook;
   /**
    * Invoked before each resolver has been invoked during the execution phase.
    */

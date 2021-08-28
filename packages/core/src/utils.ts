@@ -121,3 +121,14 @@ export async function* finalAsyncIterator<TInput>(
     onFinal();
   }
 }
+
+export async function* errorAsyncIterator<TInput>(
+  asyncIterable: AsyncIterableIterator<TInput>,
+  onError: (err: unknown) => void
+): AsyncIterableIterator<TInput> {
+  try {
+    yield* asyncIterable;
+  } catch (err: unknown) {
+    onError(err);
+  }
+}

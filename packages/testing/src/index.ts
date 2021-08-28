@@ -165,29 +165,21 @@ export function createTestkit(pluginsOrEnvelop: GetEnvelopedFn<any> | Plugin<any
         };
       }
 
-      let contextValue: any;
-
-      try {
-        contextValue = await proxy.contextFactory({
-          request: {
-            headers: {},
-            method: 'POST',
-            query: '',
-            body: {
-              query: print(document),
-              variables: variableValues,
-            },
+      const contextValue = await proxy.contextFactory({
+        request: {
+          headers: {},
+          method: 'POST',
+          query: '',
+          body: {
+            query: print(document),
+            variables: variableValues,
           },
-          document,
-          operation: print(document),
-          variables: variableValues,
-          ...initialContext,
-        });
-      } catch (err: unknown) {
-        return {
-          errors: [toGraphQLErrorOrThrow(err)],
-        };
-      }
+        },
+        document,
+        operation: print(document),
+        variables: variableValues,
+        ...initialContext,
+      });
 
       if (mainOperation.operation === 'subscription') {
         return proxy.subscribe({
