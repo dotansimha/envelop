@@ -1,0 +1,48 @@
+{
+  "name": "@envelop/override-fields",
+  "version": "0.0.1",
+  "author": "Santino Puleio <santinopuleio@gmail.com>",
+  "license": "MIT",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dotansimha/envelop.git",
+    "directory": "packages/plugins/override-fields"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    },
+    "./*": {
+      "require": "./dist/*.js",
+      "import": "./dist/*.mjs"
+    }
+  },
+  "typings": "dist/index.d.ts",
+  "typescript": {
+    "definition": "dist/index.d.ts"
+  },
+  "scripts": {
+    "test": "jest",
+    "prepack": "bob prepack"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "bob-the-bundler": "1.4.1",
+    "graphql": "15.5.1",
+    "typescript": "4.3.5"
+  },
+  "peerDependencies": {
+    "graphql": "^14.0.0 || ^15.0.0"
+  },
+  "buildOptions": {
+    "input": "./src/index.ts"
+  },
+  "publishConfig": {
+    "directory": "dist",
+    "access": "public"
+  }
+}
