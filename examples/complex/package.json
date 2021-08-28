@@ -1,0 +1,29 @@
+{
+  "name": "@envelop-examples/example",
+  "private": true,
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Laurin Quast",
+  "license": "MIT",
+  "dependencies": {
+    "@envelop/auth0": "1.0.0",
+    "@envelop/core": "1.0.4-alpha-5276a31.0",
+    "@graphql-tools/schema": "8.1.2",
+    "dotenv": "10.0.0",
+    "envalid": "7.2.1",
+    "fastify": "3.20.2",
+    "graphql": "experimental-stream-defer",
+    "graphql-helix": "1.7.0"
+  },
+  "devDependencies": {
+    "@envelop/apollo-tracing": "1.0.3",
+    "@types/node": "15.6.1",
+    "ts-node": "10.0.0",
+    "ts-node-dev": "1.1.8",
+    "typescript": "4.3.5"
+  },
+  "scripts": {
+    "start": "ts-node -r dotenv/config src/index.ts",
+    "start:dev": "ts-node-dev -r dotenv/config src/index.ts"
+  }
+}
