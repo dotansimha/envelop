@@ -452,7 +452,7 @@ export function createEnvelopOrchestrator<PluginsContext = any>(plugins: Plugin[
 
         return result;
       })
-    : execute;
+    : makeExecute(execute);
 
   initDone = true;
 
