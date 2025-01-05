@@ -51,7 +51,7 @@
     "graphql": "^14.0.0 || ^15.0.0 || ^16.0.0"
   },
   "dependencies": {
-    "lru-cache": "^10.0.0",
+    "lru-cache": "^11.0.0",
     "tslib": "^2.5.0"
   },
   "devDependencies": {

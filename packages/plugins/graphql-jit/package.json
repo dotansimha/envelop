@@ -59,7 +59,7 @@
     "@envelop/core": "workspace:^",
     "@graphql-tools/schema": "10.0.15",
     "graphql": "16.8.1",
-    "lru-cache": "^10.0.0",
+    "lru-cache": "^11.0.0",
     "reflect-metadata": "0.2.1",
     "typescript": "5.1.3"
   },
