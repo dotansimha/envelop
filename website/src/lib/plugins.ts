@@ -1,8 +1,8 @@
 import { StaticImageData } from 'next/image';
-import apolloIcon from '../../public/assets/logos/apollo.png';
+import apolloIcon from '../../public/assets/logos/apollo.svg';
 import assetsIcon from '../../public/assets/logos/assets.png';
 import auth0Icon from '../../public/assets/logos/auth0.png';
-import datadogIcon from '../../public/assets/logos/datadog.png';
+import datadogIcon from '../../public/assets/logos/datadog.svg';
 import genericAuthIcon from '../../public/assets/logos/generic_auth.png';
 import graphqlArmorIcon from '../../public/assets/logos/graphql-armor.svg';
 import graphqlIcon from '../../public/assets/logos/graphql.png';
@@ -13,9 +13,9 @@ import openTelemetryIcon from '../../public/assets/logos/opentelemetry.png';
 import persistedOperationsIcon from '../../public/assets/logos/persisted_operations.png';
 import prometheusIcon from '../../public/assets/logos/prometheus.png';
 import rateLimiterIcon from '../../public/assets/logos/rate_limiter.png';
-import sentryIcon from '../../public/assets/logos/sentry.png';
+import sentryIcon from '../../public/assets/logos/sentry.svg';
 import envelopIcon from '../../public/logo.png';
-import hiveIcon from 'https://the-guild.dev/static/shared-logos/products/hive.svg';
+import hiveIcon from './hive-plugins-logo-green.svg';
 
 export const ALL_TAGS = [
   'tracing',

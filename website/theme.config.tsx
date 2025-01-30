@@ -32,7 +32,7 @@ export default defineConfig({
   },
   websiteName: 'Envelop',
   description: 'The GraphQL plugin system',
-  logo: PRODUCTS.ENVELOP.logo({ className: 'w-8' }),
+  logo: <></>, // Envelop has a lettermark of boxed "E", not an icon
   editLink: {
     component({ children, className, filePath }) {
       const router = useRouter();
