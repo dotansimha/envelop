@@ -32,6 +32,8 @@ function createSerializableGraphQLError(
 ): SerializableGraphQLErrorLike {
   const error = new Error(message) as SerializableGraphQLErrorLike;
   error.name = 'GraphQLError';
+
+  const hasPath = originalError && typeof originalError === 'object' && 'path' in originalError;
   if (isDev) {
     const extensions =
       originalError instanceof Error
@@ -48,6 +50,7 @@ function createSerializableGraphQLError(
   Object.defineProperty(error, 'toJSON', {
     value() {
       return {
+        ...(hasPath ? {path: originalError.path} : {}),
         message: error.message,
         extensions: error.extensions,
       };

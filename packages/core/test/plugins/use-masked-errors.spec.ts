@@ -105,6 +105,7 @@ describe('useMaskedErrors', () => {
     expect(result.errors).toHaveLength(1);
     const [error] = result.errors!;
     expect(error.message).toEqual(DEFAULT_ERROR_MESSAGE);
+    expect(error.path).toEqual(['secret']);
   });
 
   it('Should not mask expected errors', async () => {
@@ -116,6 +117,7 @@ describe('useMaskedErrors', () => {
     const [error] = result.errors!;
     expect(error.message).toEqual('This message goes to all the clients out there!');
     expect(error.extensions).toEqual({ foo: 1 });
+    expect(error.path).toEqual(['secretEnvelop']);
   });
 
   it('Should not mask GraphQL operation syntax errors (of course it does not since we are only hooking in after execute, but just to be sure)', async () => {
@@ -142,6 +144,7 @@ describe('useMaskedErrors', () => {
     expect(JSON.stringify(result)).toMatchInlineSnapshot(
       `"{"errors":[{"message":"This message goes to all the clients out there!","locations":[{"line":1,"column":9}],"path":["secretWithExtensions"],"extensions":{"code":"Foo","message":"Bar"}}],"data":null}"`,
     );
+    expect(error.path).toEqual(['secretWithExtensions']);
   });
 
   it('Should properly mask context creation errors with a custom error message', async () => {
@@ -159,6 +162,7 @@ describe('useMaskedErrors', () => {
       await testInstance.execute(`query { secretWithExtensions }`);
     } catch (err) {
       expect(err).toMatchInlineSnapshot(`[GraphQLError: My Custom Error Message.]`);
+      expect(error.path).toEqual(['secretWithExtensions']);
     }
   });
   it('Should properly mask context creation errors', async () => {
@@ -176,6 +180,7 @@ describe('useMaskedErrors', () => {
       await testInstance.execute(`query { secretWithExtensions }`);
     } catch (err: any) {
       expect(err.message).toEqual(DEFAULT_ERROR_MESSAGE);
+      expect(error.path).toEqual(['secretWithExtensions']);
     }
   });
 
@@ -196,6 +201,7 @@ describe('useMaskedErrors', () => {
       if (err instanceof GraphQLError) {
         expect(err.message).toEqual(`No context for you!`);
         expect(err.extensions).toEqual({ foo: 1 });
+        expect(error.path).toEqual(['secretWithExtensions']);
       } else {
         throw err;
       }
