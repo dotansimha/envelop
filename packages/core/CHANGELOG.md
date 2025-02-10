@@ -1,5 +1,21 @@
 # @envelop/core
 
+## 5.1.0
+
+### Minor Changes
+
+- [#2406](https://github.com/n1ru4l/envelop/pull/2406)
+  [`a3e0d70`](https://github.com/n1ru4l/envelop/commit/a3e0d70e22d5798bbf876261e87876d86a2addbf)
+  Thanks [@EmrysMyrddin](https://github.com/EmrysMyrddin)! - Add `context` field to `onExecute` and
+  `onSubscribe` hooks payloads. This harmonize all the hooks invovled in the handling of a graphql
+  operation.
+
+### Patch Changes
+
+- Updated dependencies
+  [[`a3e0d70`](https://github.com/n1ru4l/envelop/commit/a3e0d70e22d5798bbf876261e87876d86a2addbf)]:
+  - @envelop/types@5.1.0
+
 ## 5.0.3
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@envelop/prometheus",
-  "version": "11.1.0",
+  "version": "12.0.0",
   "type": "module",
   "repository": {
     "type": "git",
@@ -47,12 +47,12 @@
   },
   "typings": "dist/typings/index.d.ts",
   "peerDependencies": {
-    "@envelop/core": "^5.0.3",
+    "@envelop/core": "^5.1.0",
     "graphql": "^14.0.0 || ^15.0.0 || ^16.0.0",
     "prom-client": "^15.0.0"
   },
   "dependencies": {
-    "@envelop/on-resolve": "^4.1.0",
+    "@envelop/on-resolve": "^5.0.0",
     "tslib": "^2.5.0"
   },
   "devDependencies": {
