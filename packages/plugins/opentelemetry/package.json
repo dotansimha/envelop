@@ -1,6 +1,6 @@
 {
   "name": "@envelop/opentelemetry",
-  "version": "6.3.1",
+  "version": "7.0.0",
   "type": "module",
   "repository": {
     "type": "git",
@@ -47,11 +47,11 @@
   },
   "typings": "dist/typings/index.d.ts",
   "peerDependencies": {
-    "@envelop/core": "^5.0.3",
+    "@envelop/core": "^5.1.0",
     "graphql": "^14.0.0 || ^15.0.0 || ^16.0.0"
   },
   "dependencies": {
-    "@envelop/on-resolve": "^4.1.0",
+    "@envelop/on-resolve": "^5.0.0",
     "@opentelemetry/api": "^1.8.0",
     "@opentelemetry/sdk-trace-base": "^1.11.0",
     "tslib": "^2.5.0"

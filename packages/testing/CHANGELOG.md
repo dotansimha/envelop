@@ -1,5 +1,14 @@
 # @envelop/testing
 
+## 8.0.0
+
+### Patch Changes
+
+- Updated dependencies
+  [[`a3e0d70`](https://github.com/n1ru4l/envelop/commit/a3e0d70e22d5798bbf876261e87876d86a2addbf)]:
+  - @envelop/types@5.1.0
+  - @envelop/core@5.1.0
+
 ## 7.0.0
 
 ### Major Changes

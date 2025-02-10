@@ -1,6 +1,6 @@
 {
   "name": "@envelop/resource-limitations",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "type": "module",
   "description": "A rate-limit implementation based on resource limitations and static calculation of the score (similar to GitHub GraphQL API)",
   "repository": {
@@ -48,7 +48,7 @@
   },
   "typings": "dist/typings/index.d.ts",
   "peerDependencies": {
-    "@envelop/core": "^5.0.3",
+    "@envelop/core": "^5.1.0",
     "graphql": "^14.0.0 || ^15.0.0 || ^16.0.0"
   },
   "dependencies": {

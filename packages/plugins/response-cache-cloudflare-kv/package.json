@@ -1,6 +1,6 @@
 {
   "name": "@envelop/response-cache-cloudflare-kv",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "type": "module",
   "repository": {
     "type": "git",
@@ -51,7 +51,7 @@
   "typings": "dist/typings/index.d.ts",
   "peerDependencies": {
     "@cloudflare/workers-types": "^4.20231121.0",
-    "@envelop/response-cache": "^6.3.0",
+    "@envelop/response-cache": "^7.0.0",
     "graphql": "^14.0.0 || ^15.0.0 || ^16.0.0"
   },
   "peerDependenciesMeta": {

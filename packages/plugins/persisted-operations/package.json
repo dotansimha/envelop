@@ -1,6 +1,6 @@
 {
   "name": "@envelop/persisted-operations",
-  "version": "7.0.0",
+  "version": "8.0.0",
   "type": "module",
   "repository": {
     "type": "git",
@@ -47,7 +47,7 @@
   },
   "typings": "dist/typings/index.d.ts",
   "peerDependencies": {
-    "@envelop/core": "^5.0.3",
+    "@envelop/core": "^5.1.0",
     "graphql": "^14.0.0 || ^15.0.0 || ^16.0.0"
   },
   "dependencies": {
